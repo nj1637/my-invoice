@@ -287,14 +287,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     <!-- Logo -->
     <div class="relative">
       <div class="splash-ring"></div>
-      <div class="splash-leaf w-14 h-14 bg-white/10 border border-white/20 rounded-xl overflow-hidden flex items-center justify-center""
-      id="settings-logo-preview"><i data-lucide="building-2" class="w-7 h-7 text-emerald-400"></i></div>
-      <div class="flex-1 min-w-0">  </div>
+      <div class="splash-ring"></div>
+      <div class="splash-leaf w-14 h-14 bg-white/10 border border-white/20 rounded-xl overflow-hidden flex items-center justify-center" id="settings-logo-preview"><i data-lucide="building-2" class="w-7 h-7 text-emerald-400"></i></div>
     </div>
-
     <!-- Title -->
     <div class="text-center">
-      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">My Business</h1>
+      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">Dev Ayurveda</h1>
       <p class="splash-sub text-emerald-400 text-[11px] font-bold uppercase tracking-[.25em] mt-2">Professional ERP System</p>
     </div>
     <!-- Progress bar -->
@@ -407,7 +405,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
           <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">My Business</div>
+          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">Dev Ayurveda</div>
           <div class="text-emerald-500 text-[9px] font-bold uppercase tracking-widest">Modular Pro ERP</div>
         </div>
       </div>
@@ -676,7 +674,21 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
       </div>
       <!-- Products -->
       <div class="card p-5">
-        <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2"><i data-lucide="package" class="w-4 h-4 text-emerald-600"></i> Line Items</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+            <i data-lucide="package" class="w-4 h-4 text-emerald-600" id="inv-line-icon"></i>
+            <span id="inv-line-title">Line Items</span>
+          </h3>
+          <!-- Goods / Services Toggle -->
+          <div class="flex items-center bg-slate-100 rounded-xl p-1 gap-1">
+            <button id="inv-mode-goods" onclick="window.setInvoiceMode('goods')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
+              📦 Goods
+            </button>
+            <button id="inv-mode-services" onclick="window.setInvoiceMode('services')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500">
+              ✨ Services
+            </button>
+          </div>
+        </div>
         <div class="relative mb-4 flex gap-2">
           <div class="relative flex-1">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-emerald-600 z-10"></i>
@@ -824,7 +836,163 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="inventory-list"></div>
 </div>
 
-<!-- ===== RECORDS ===== -->
+<!-- ===== SERVICES ===== -->
+<div id="view-services" class="tab">
+  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-5">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800">Services</h2>
+      <p class="text-slate-400 text-sm">Consultations, treatments & service catalog</p>
+      <div class="mt-3 relative max-w-xs">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
+        <input type="text" id="services-search" placeholder="Search services..." oninput="window.renderServices&&renderServices()" class="inp pl-9 text-sm">
+      </div>
+    </div>
+    <div class="flex gap-2 flex-wrap">
+      <button onclick="window.exportServicesCSV&&exportServicesCSV()" class="btn btn-ghost btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i> CSV</button>
+      <button onclick="window.openServiceDrawer&&openServiceDrawer(null)" class="btn btn-primary btn-sm"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Service</button>
+    </div>
+  </div>
+
+  <!-- Service Category Tabs -->
+  <div class="flex gap-2 mb-4 overflow-x-auto no-scroll pb-1">
+    <button onclick="window.filterServiceCat('all')" id="scat-all" class="btn btn-primary btn-sm flex-shrink-0">All</button>
+    <button onclick="window.filterServiceCat('consultation')" id="scat-consultation" class="btn btn-ghost btn-sm flex-shrink-0">🩺 Consultation</button>
+    <button onclick="window.filterServiceCat('treatment')" id="scat-treatment" class="btn btn-ghost btn-sm flex-shrink-0">💆 Treatment</button>
+    <button onclick="window.filterServiceCat('therapy')" id="scat-therapy" class="btn btn-ghost btn-sm flex-shrink-0">🌿 Therapy</button>
+    <button onclick="window.filterServiceCat('package')" id="scat-package" class="btn btn-ghost btn-sm flex-shrink-0">📦 Package</button>
+    <button onclick="window.filterServiceCat('other')" id="scat-other" class="btn btn-ghost btn-sm flex-shrink-0">⚙️ Other</button>
+  </div>
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-3 gap-3 mb-5" id="services-stats">
+    <div class="stat text-center p-3">
+      <div class="text-xl font-black text-purple-600" id="svc-total-count">0</div>
+      <div class="text-xs text-slate-400 mt-1">Total Services</div>
+    </div>
+    <div class="stat text-center p-3">
+      <div class="text-xl font-black text-emerald-600" id="svc-avg-rate">₹0</div>
+      <div class="text-xs text-slate-400 mt-1">Avg. Rate</div>
+    </div>
+    <div class="stat text-center p-3">
+      <div class="text-xl font-black text-blue-600" id="svc-total-billed">₹0</div>
+      <div class="text-xs text-slate-400 mt-1">Total Billed</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="services-list">
+    <div class="col-span-full p-8 text-center text-slate-400">
+      <i data-lucide="sparkles" class="w-12 h-12 mx-auto mb-3 text-slate-200"></i>
+      <div class="font-semibold">No services yet</div>
+      <div class="text-sm mt-1">Add your first service to get started</div>
+      <button onclick="window.openServiceDrawer&&openServiceDrawer(null)" class="btn btn-primary btn-sm mt-4">
+        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add First Service
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Service Drawer -->
+<div id="svc-drawer-bg" class="drawer-bg" onclick="window.closeServiceDrawer&&closeServiceDrawer()"></div>
+<div id="svc-drawer" class="drawer">
+  <div class="drawer-head">
+    <div class="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center mr-3">
+      <i data-lucide="sparkles" class="w-5 h-5 text-purple-600"></i>
+    </div>
+    <div class="flex-1">
+      <div class="font-bold text-slate-800" id="svc-drawer-title">Add Service</div>
+      <div class="text-xs text-slate-400" id="svc-drawer-sub">New service entry</div>
+    </div>
+    <button onclick="window.closeServiceDrawer&&closeServiceDrawer()" class="btn btn-icon btn-ghost ml-auto">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+  </div>
+  <div class="drawer-body space-y-4">
+    <div>
+      <label class="lbl">Service Name *</label>
+      <input type="text" id="svc-name" class="inp" placeholder="e.g. Panchakarma Consultation">
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="lbl">Category</label>
+        <select id="svc-category" class="inp bg-white">
+          <option value="consultation">🩺 Consultation</option>
+          <option value="treatment">💆 Treatment</option>
+          <option value="therapy">🌿 Therapy</option>
+          <option value="package">📦 Package</option>
+          <option value="other">⚙️ Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Duration</label>
+        <select id="svc-duration" class="inp bg-white">
+          <option value="">N/A</option>
+          <option value="15 min">15 min</option>
+          <option value="30 min">30 min</option>
+          <option value="45 min">45 min</option>
+          <option value="1 hour">1 hour</option>
+          <option value="90 min">90 min</option>
+          <option value="2 hours">2 hours</option>
+          <option value="1 day">1 day</option>
+          <option value="Custom">Custom</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="lbl">Rate (₹) *</label>
+        <input type="number" id="svc-rate" class="inp" placeholder="500">
+      </div>
+      <div>
+        <label class="lbl">GST %</label>
+        <select id="svc-gst" class="inp bg-white">
+          <option value="0">0% (Exempt)</option>
+          <option value="5">5%</option>
+          <option value="12">12%</option>
+          <option value="18" selected>18%</option>
+          <option value="28">28%</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label class="lbl">SAC Code <span class="text-slate-400 font-normal normal-case">(Service Accounting Code)</span></label>
+      <input type="text" id="svc-sac" class="inp" placeholder="e.g. 999311 for Medical Services">
+    </div>
+    <div>
+      <label class="lbl">Description</label>
+      <textarea id="svc-desc" rows="2" class="inp resize-none" placeholder="What does this service include?"></textarea>
+    </div>
+    <div>
+      <label class="lbl">Inclusions / What's Covered</label>
+      <textarea id="svc-inclusions" rows="2" class="inp resize-none" placeholder="e.g. Initial assessment, 3 sessions, follow-up..."></textarea>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="lbl">Available Days</label>
+        <input type="text" id="svc-days" class="inp text-sm" placeholder="Mon-Sat">
+      </div>
+      <div>
+        <label class="lbl">Timing</label>
+        <input type="text" id="svc-timing" class="inp text-sm" placeholder="9 AM – 6 PM">
+      </div>
+    </div>
+    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+      <label class="toggle"><input type="checkbox" id="svc-active" checked><span class="toggle-track"></span></label>
+      <div>
+        <div class="text-sm font-semibold text-slate-700">Active / Available</div>
+        <div class="text-xs text-slate-400">Show in invoice search</div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button id="svc-delete-btn" class="btn btn-danger btn-sm mr-auto hidden" onclick="window.deleteService&&deleteService()">
+      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+    </button>
+    <button onclick="window.closeServiceDrawer&&closeServiceDrawer()" class="btn btn-ghost">Cancel</button>
+    <button onclick="window.saveService&&saveService()" class="btn btn-primary">
+      <i data-lucide="save" class="w-4 h-4"></i> Save Service
+    </button>
+  </div>
+</div>
 <div id="view-records" class="tab">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
     <div><h2 class="text-xl font-bold text-slate-800">Sales Records</h2><p class="text-slate-400 text-sm">Invoices, Credit Notes, Reports</p></div>
@@ -879,7 +1047,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     <div class="flex items-center gap-4">
       <div class="w-14 h-14 bg-white/10 border border-white/20 rounded-xl overflow-hidden flex items-center justify-center" id="settings-logo-preview"><i data-lucide="building-2" class="w-7 h-7 text-emerald-400"></i></div>
       <div class="flex-1 min-w-0">
-        <div class="text-white font-bold text-base" id="settings-biz-display">My Business</div>
+        <div class="text-white font-bold text-base" id="settings-biz-display">Dev Ayurveda</div>
         <div class="text-emerald-400 text-xs font-medium" id="settings-email-display">...</div>
         <div class="flex gap-2 mt-1.5"><span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px]">Active</span><span class="badge bg-white/10 text-white/60 text-[10px]">Admin</span></div>
       </div>
@@ -2282,7 +2450,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const products = window.AppState.products || [];
                 const expenses = window.AppState.expenses || [];
                 const s = window.AppState.settings || {};
-                const bizName = s.businessName || 'My Business';
+                const bizName = s.businessName || 'Dev Ayurveda';
                 const now = new Date().toLocaleString('en-IN');
 
                 // Helper: add sheet with header styling info
@@ -2680,9 +2848,10 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 'invoice', icon: 'file-plus', label: 'Invoice', desktopOnly: false, mobileHidden: true },
             { id: 'records', icon: 'file-text', label: 'Records' }, 
             { id: 'inventory', icon: 'box', label: 'Inventory' },
+            { id: 'services', icon: 'sparkles', label: 'Services' },
             { id: 'expenses', icon: 'receipt', label: 'Expenses', class: 'feat-expenses' },
             { id: 'clients', icon: 'users', label: 'Clients' }, 
-            { id: 'ai-report', icon: 'sparkles', label: 'AI Report' },
+            { id: 'ai-report', icon: 'bar-chart-2', label: 'AI Report' },
             { id: 'settings', icon: 'settings', label: 'Settings' }
         ];
 
@@ -3040,6 +3209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(tabId === 'expenses' && window.renderExpenses) window.renderExpenses();
             if(tabId === 'records') { window.populateClientFilter(); window.renderRecords(); }
             if(tabId === 'clients') window.renderClients();
+            if(tabId === 'services') window.renderServices && window.renderServices();
             if(tabId === 'settings') window.populateSettingsUI();
             
             window.scrollTo(0,0);
@@ -3964,7 +4134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.populateSettingsUI = function() {
             const s = window.AppState.settings;
             // Dynamic app name update — show user's business name everywhere
-            const bizName = s.businessName || 'My Business';
+            const bizName = s.businessName || 'Dev Ayurveda';
             const sidebarName = document.getElementById('sidebar-biz-name'); if(sidebarName) sidebarName.textContent = bizName;
             const topbarTitle = document.getElementById('topbar-biz-name'); if(topbarTitle) topbarTitle.textContent = bizName;
             setVal('set-biz-name', s.businessName || ''); setVal('set-biz-gstin', s.gstin || ''); setVal('set-biz-address', s.address || ''); 
@@ -4083,7 +4253,12 @@ document.addEventListener('DOMContentLoaded', function() {
         window.generateInvoiceHTML = function(inv) {
             const s = window.AppState.settings; const tpl = s.template || 'modern'; const curr = inv.currency || 'INR';
             let paymentQR = ''; if(Number(inv.grandTotal) > 0 && s.upi && curr === 'INR' && inv.paymentMode !== 'credit') { const upiStr = `upi://pay?pa=${s.upi}&pn=${encodeURIComponent(s.businessName)}&am=${Number(inv.grandTotal).toFixed(2)}&cu=INR`; paymentQR = `<img src="${window.generateLocalQR(upiStr)}" class="w-20 h-20 border border-slate-200 p-1 rounded bg-white shadow-sm">`; }
-            const digitalURL = `https://dev-ayurveda.web.app/verify/${inv.id}`; const digitalQR = `<img src="${window.generateLocalQR(digitalURL)}" class="w-20 h-20 border border-slate-200 p-1 rounded bg-white shadow-sm">`;
+            // Digital QR — self-contained invoice HTML (no external link)
+            let digitalQR = '';
+            try {
+                const dHtml = window.generateDigitalInvoiceQR ? window.generateDigitalInvoiceQR(inv) : '';
+                if(dHtml) digitalQR = `<div class="text-center"><img src="${dHtml}" class="w-20 h-20 border border-slate-200 p-1 rounded bg-white shadow-sm mx-auto"><div class="text-[8px] font-bold text-slate-500 mt-1 uppercase tracking-wider">Scan for Digital Copy</div></div>`;
+            } catch(e) {}
 
             let logoHtml = ''; const dispStyle = s.logoDisplay || 'both';
             if (dispStyle === 'logo' && s.logo) logoHtml = `<img src="${s.logo}" class="h-20 object-contain max-w-[250px]">`;
@@ -4399,9 +4574,10 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="mt-auto">
                 <div class="flex justify-between items-end pt-6 border-t border-slate-200">
-                    <div class="flex gap-4">
-                        ${(s.bankName && s.bankAcc) ? `<div class="text-[10px] text-slate-600 mr-4"><div class="font-bold text-slate-800 mb-1 uppercase tracking-wider">Bank Details</div><div>Bank: ${s.bankName}</div><div>A/C: ${s.bankAcc}</div><div>IFSC: ${s.bankIfsc}</div></div>` : ''}
+                    <div class="flex gap-3 flex-wrap items-end">
+                        ${(s.bankName && s.bankAcc) ? `<div class="text-[10px] text-slate-600 mr-2"><div class="font-bold text-slate-800 mb-1 uppercase tracking-wider">Bank Details</div><div>Bank: ${s.bankName}</div><div>A/C: ${s.bankAcc}</div><div>IFSC: ${s.bankIfsc}</div></div>` : ''}
                         ${paymentQR ? `<div class="text-center">${paymentQR}<div class="text-[9px] font-bold text-emerald-700 mt-1 uppercase tracking-widest">Scan to Pay</div></div>` : ''}
+                        ${digitalQR}
                         ${inv.paymentMode === 'credit' ? `<div class="text-center bg-amber-50 px-3 py-1 rounded border border-amber-200"><div class="text-[9px] font-bold text-amber-700 uppercase tracking-widest">Credit Sale</div></div>` : ''}
                     </div>
                     <div class="text-center relative">
@@ -5049,10 +5225,33 @@ window.openInvoicePreview = function() {
     var draft = window.AppState.draft;
     if(!draft.client || !draft.client.name) { window.showToast&&window.showToast('Client name required','error'); return; }
     if(!draft.items || draft.items.length === 0) { window.showToast&&window.showToast('Add at least one item','error'); return; }
-    // Generate preview HTML
-    var previewInv = Object.assign({}, draft, { status:'draft', paymentStatus:'unpaid', grandTotal: draft.grandTotal || 0 });
-    // Calc totals for preview
-    if(window.updateInvoiceUI) window.updateInvoiceUI();
+
+    // Calculate proper totals
+    var totals = window.updateInvoiceUI ? window.updateInvoiceUI() : null;
+    var grandTotal = 0, subtotal = 0, totalTax = 0;
+    if(totals) { grandTotal = totals.grandTotal||0; subtotal = totals.subtotal||0; totalTax = totals.totalTax||0; }
+    else {
+        // Fallback calc
+        draft.items.forEach(function(item){
+            var rate = Number(item.rate||0), qty = Number(item.qty||0), gst = Number(item.gst||0);
+            var base = gst>0 ? rate/(1+gst/100) : rate;
+            var tax = (rate-base)*qty;
+            subtotal += base*qty; totalTax += tax;
+        });
+        grandTotal = subtotal + totalTax - Number(draft.discount||0);
+    }
+
+    var today = new Date().toISOString().split('T')[0];
+    var previewInv = Object.assign({}, draft, {
+        status: 'draft',
+        paymentStatus: 'unpaid',
+        grandTotal: grandTotal,
+        subtotal: subtotal,
+        totalTax: totalTax,
+        date: draft.date || today,
+        id: draft.id || window.getNextInvoiceId()
+    });
+
     var area = document.getElementById('preview-render-area');
     if(area && window.generateInvoiceHTML) {
         area.innerHTML = window.generateInvoiceHTML(previewInv);
@@ -5060,6 +5259,7 @@ window.openInvoicePreview = function() {
     var modal = document.getElementById('invoice-preview-modal');
     if(modal) modal.classList.add('open');
     window._previewOpen = true;
+    window._previewInvData = previewInv;
     if(typeof lucide !== 'undefined') lucide.createIcons();
     setTimeout(function(){ scalePreviewInv(); }, 80);
 };
@@ -5495,7 +5695,7 @@ window.sendReminderWA = function(clientId) {
     var unpaidInvs = (window.AppState.invoices||[]).filter(function(i){ return i.client&&i.client.name===client.name && i.paymentStatus!=='paid' && i.status==='final'; });
     if(unpaidInvs.length===0) { window.showToast('No pending dues for this client','info'); return; }
     var total = unpaidInvs.reduce(function(s,i){ return s+Number(i.grandTotal||0); },0);
-    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'My Business';
+    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
     var ids = unpaidInvs.map(function(i){ return i.id; }).join(', ');
     var fmt = function(n){ return '₹'+Number(n).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+bizName+'*\n\nDear '+client.name+',\n\nThis is a friendly reminder regarding your outstanding payment:\n\n📋 Invoice(s): '+ids+'\n💰 Total Due: *'+fmt(total)+'*\n\nKindly arrange payment at your earliest convenience.\n\nThank you for your trust! 🙏';
@@ -5586,7 +5786,7 @@ window.updateBirthdayReminders = function() {
         list.innerHTML = matches.map(function(c){
             var num = (c.mobile||'').replace(/\D/g,'');
             var waNum = num.length===10?'91'+num:num;
-            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'My Business');
+            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda');
             return '<div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-pink-100 shadow-sm"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold text-sm">'+c.name.charAt(0)+'</div><div><div class="text-sm font-bold text-slate-800">'+c.name+'</div><div class="text-xs text-pink-500">🎂 Birthday Today!</div></div></div><a href="https://wa.me/'+waNum+'?text='+encodeURIComponent(msg)+'" target="_blank" class="btn btn-sm text-xs" style="background:#25D366;color:white;border:none">Wish 🎉</a></div>';
         }).join('');
     } else {
@@ -6031,7 +6231,7 @@ window.generateAIReport = function() {
   if(period.weekRange) exps = exps.filter(function(e){ var d=parseInt(e.date.split('-')[2]); return d>=period.weekRange[0] && d<=period.weekRange[1]; });
   var products = (window.AppState&&window.AppState.products)||[];
   var s = (window.AppState&&window.AppState.settings)||{};
-  var bizName = s.businessName || 'My Business';
+  var bizName = s.businessName || 'Dev Ayurveda';
 
   var rev = invs.reduce(function(sum,i){ return sum+Number(i.grandTotal||0); },0);
   var exp = exps.reduce(function(sum,e){ return sum+Number(e.amount||0); },0);
@@ -6112,7 +6312,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </head>
 <body>
 <div class="hero">
-  <div class="badge">🌿 My Business ERP · AI Report</div>
+  <div class="badge">🌿 Dev Ayurveda ERP · AI Report</div>
   <h1>${bizName}</h1>
   <p>${period.type === 'weekly' ? 'Weekly' : 'Monthly'} Business Intelligence Report</p>
   <p style="color:#475569;font-size:.78rem;margin-top:8px">Generated: ${now}</p>
@@ -6210,7 +6410,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </div>
 
 <div class="footer">
-  <p>Generated by <strong>${bizName}</strong> ERP · My Business Pro · ${now}</p>
+  <p>Generated by <strong>${bizName}</strong> ERP · Dev Ayurveda Pro · ${now}</p>
   <p style="margin-top:4px;color:#cbd5e1">This report is confidential and intended for internal business use only.</p>
 </div>
 
@@ -6350,12 +6550,38 @@ window.autoSendWAInvoice = async function() {
     var invs = (window.AppState&&window.AppState.invoices)||[];
     var latest = invs.filter(function(i){ return i.status==='final'; }).sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); })[0];
     if(!latest) return;
-    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'My Business';
+    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
     var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+biz+'*\n\nDear '+latest.client.name+',\n\nYour invoice is ready:\n\n📋 *'+latest.id+'*\n📅 '+latest.date+'\n💰 *'+fmt(latest.grandTotal)+'*\n\n'+(latest.paymentStatus==='paid'?'✅ Paid':'⏳ Payment Pending')+'\n\nThank you! 🙏';
     var mobile = (latest.client&&latest.client.mobile||'').replace(/\D/g,'');
     var num = mobile.length===10?'91'+mobile:mobile;
+
+    // Try to render invoice and share as PDF
+    var tempDiv = document.createElement('div');
+    tempDiv.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:white;';
+    if(window.generateInvoiceHTML) tempDiv.innerHTML = window.generateInvoiceHTML(latest);
+    document.body.appendChild(tempDiv);
+
+    try {
+        if(typeof generatePDFBlob !== 'undefined' && navigator.share && navigator.canShare) {
+            window.showToast&&window.showToast('PDF generating for WhatsApp...','info');
+            var blob = await generatePDFBlob(tempDiv, latest.id+'.pdf');
+            if(blob) {
+                var file = new File([blob], latest.id+'.pdf', {type:'application/pdf'});
+                if(navigator.canShare({files:[file]})) {
+                    await navigator.share({files:[file], text:msg});
+                    window.showToast&&window.showToast('Invoice shared via WhatsApp with PDF! ✅');
+                    document.body.removeChild(tempDiv);
+                    return;
+                }
+            }
+        }
+    } catch(e) { if(e.name==='AbortError') { document.body.removeChild(tempDiv); return; } }
+
+    document.body.removeChild(tempDiv);
+    // Fallback: WA text + PDF download
     if(num) window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
+    window.showToast&&window.showToast('PDF bhi download ho rhi hai — WhatsApp mein attach karo 📎','info');
 };
 
 // ── BARCODE SCANNER ───────────────────────────────────────────
@@ -6835,5 +7061,213 @@ setTimeout(function(){
         }
     }, 2000);
 })();
-</script></body>
+</script>
+
+<script>
+// ================================================================
+// SERVICES SYSTEM — Full Implementation
+// ================================================================
+
+window._svcCatFilter = 'all';
+window._editSvcId = null;
+window._svcInvoiceMode = localStorage.getItem('ayur_inv_mode_type') || 'goods';
+
+// ── GOODS/SERVICES TOGGLE IN INVOICE ─────────────────────────
+window.setInvoiceMode = function(mode) {
+    window._svcInvoiceMode = mode;
+    localStorage.setItem('ayur_inv_mode_type', mode);
+    var gBtn = document.getElementById('inv-mode-goods');
+    var sBtn = document.getElementById('inv-mode-services');
+    var icon = document.getElementById('inv-line-icon');
+    var title = document.getElementById('inv-line-title');
+    var inp = document.getElementById('inv-product-search');
+    if(mode === 'goods') {
+        if(gBtn) gBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm';
+        if(sBtn) sBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500';
+        if(title) title.textContent = 'Line Items (Goods)';
+        if(inp) { inp.placeholder = 'Search & add product...'; inp.className = 'inp pl-10 bg-emerald-50 border-emerald-200 focus:bg-white'; }
+        if(inp) { inp.oninput = function(){ handleProductSearch(this.value); }; inp.onfocus = function(){ handleProductSearch(this.value); }; }
+    } else {
+        if(gBtn) gBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500';
+        if(sBtn) sBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-purple-700 shadow-sm';
+        if(title) title.textContent = 'Line Items (Services)';
+        if(inp) { inp.placeholder = 'Search & add service...'; inp.className = 'inp pl-10 bg-purple-50 border-purple-200 focus:bg-white'; }
+        if(inp) { inp.oninput = function(){ window.handleServiceSearch(this.value); }; inp.onfocus = function(){ window.handleServiceSearch(this.value); }; }
+    }
+};
+
+// Apply mode on invoice open
+(function(){
+    var iv = setInterval(function(){
+        if(window.switchTab && !window.switchTab._svcModePatch) {
+            window.switchTab._svcModePatch = true;
+            var orig = window.switchTab;
+            window.switchTab = function(tabId) {
+                orig(tabId);
+                if(tabId === 'invoice') setTimeout(function(){ window.setInvoiceMode(window._svcInvoiceMode||'goods'); }, 150);
+                if(tabId === 'services') { window.loadServices(); setTimeout(window.renderServices, 200); }
+            };
+            clearInterval(iv);
+        }
+    }, 300);
+})();
+
+// Patch updateInvoiceUI to store totals on draft
+(function(){
+    var iv2 = setInterval(function(){
+        if(window.updateInvoiceUI && !window.updateInvoiceUI._svcPatch) {
+            window.updateInvoiceUI._svcPatch = true;
+            var orig = window.updateInvoiceUI;
+            window.updateInvoiceUI = function() {
+                var r = orig.apply(this, arguments);
+                if(r && window.AppState && window.AppState.draft) {
+                    window.AppState.draft.grandTotal = r.grandTotal;
+                    window.AppState.draft.subtotal = r.subtotal;
+                    window.AppState.draft.totalTax = r.totalTax;
+                }
+                return r;
+            };
+            clearInterval(iv2);
+        }
+    }, 400);
+})();
+
+// ── SERVICE SEARCH IN INVOICE ─────────────────────────────────
+window.handleServiceSearch = function(query) {
+    var sugg = document.getElementById('product-suggestions');
+    if(!sugg) return;
+    if(!query) { sugg.classList.add('hidden'); return; }
+    var svcs = (window.AppState&&window.AppState.services)||[];
+    var matches = svcs.filter(function(s){ return s.active!==false && s.name && s.name.toLowerCase().includes(query.toLowerCase()); }).slice(0,8);
+    if(!matches.length) { sugg.classList.add('hidden'); return; }
+    sugg.innerHTML = matches.map(function(s){
+        var safeS = JSON.stringify(s).replace(/'/g,"&#39;");
+        return '<div onclick=\'window.addServiceItem('+safeS+')\' class="px-4 py-3 hover:bg-purple-50 cursor-pointer border-b border-slate-50 flex justify-between items-center">'
+            +'<div><div class="font-medium text-slate-800">'+s.name+'</div><div class="text-[10px] text-slate-400">'+s.category+(s.duration?' · '+s.duration:'')+'</div></div>'
+            +'<div class="text-right"><div class="font-bold text-purple-700">₹'+s.rate+'</div><div class="text-[10px] text-slate-400">GST '+s.gst+'%</div></div></div>';
+    }).join('');
+    sugg.classList.remove('hidden');
+};
+
+window.addServiceItem = function(s) {
+    if(!window.AppState||!window.AppState.draft) return;
+    window.AppState.draft.items.push({ id:Date.now().toString(), productId:'svc_'+s.id, name:s.name, rate:Number(s.rate), qty:1, gst:Number(s.gst||0), hsn:s.sac||'', isService:true, inclusive:false });
+    var inp = document.getElementById('inv-product-search'); if(inp) inp.value='';
+    var sugg = document.getElementById('product-suggestions'); if(sugg) sugg.classList.add('hidden');
+    window.updateInvoiceUI&&window.updateInvoiceUI();
+    window.showToast&&window.showToast('Service added: '+s.name+' ✅');
+};
+
+// ── SERVICES DATA ─────────────────────────────────────────────
+if(!window.AppState) window.AppState = {};
+if(!window.AppState.services) window.AppState.services = [];
+
+window.loadServices = function() {
+    var uid = window.AppState&&window.AppState.user&&window.AppState.user.uid;
+    if(!uid) return;
+    try { var d=localStorage.getItem('ayur_services_'+uid); if(d) window.AppState.services=JSON.parse(d); } catch(e){}
+};
+window.saveServiceToStorage = function() {
+    var uid = window.AppState&&window.AppState.user&&window.AppState.user.uid;
+    if(uid) try { localStorage.setItem('ayur_services_'+uid, JSON.stringify(window.AppState.services||[])); } catch(e){}
+};
+
+// Auto-load on user login
+(function(){
+    var iv3 = setInterval(function(){
+        if(window.AppState&&window.AppState.user&&!window._svcLoaded){
+            window._svcLoaded=true; clearInterval(iv3); window.loadServices();
+        }
+    }, 500);
+})();
+
+// ── SERVICE DRAWER ────────────────────────────────────────────
+window.openServiceDrawer = function(id) {
+    window._editSvcId = id||null;
+    var fields = {name:'',rate:'',sac:'',desc:'',inclusions:'',days:'',timing:''};
+    Object.keys(fields).forEach(function(f){ var el=document.getElementById('svc-'+f); if(el) el.value=fields[f]; });
+    var gst=document.getElementById('svc-gst'); if(gst) gst.value='0';
+    var cat=document.getElementById('svc-category'); if(cat) cat.value='consultation';
+    var dur=document.getElementById('svc-duration'); if(dur) dur.value='';
+    var act=document.getElementById('svc-active'); if(act) act.checked=true;
+    var delBtn=document.getElementById('svc-delete-btn');
+    var titleEl=document.getElementById('svc-drawer-title');
+    var subEl=document.getElementById('svc-drawer-sub');
+    if(id) {
+        var svc=(window.AppState.services||[]).find(function(s){ return s.id===id; });
+        if(svc) {
+            if(titleEl) titleEl.textContent='Edit Service';
+            if(subEl) subEl.textContent='#'+id.slice(-6).toUpperCase();
+            if(delBtn) delBtn.classList.remove('hidden');
+            ['name','rate','sac','desc','inclusions','days','timing'].forEach(function(f){ var el=document.getElementById('svc-'+f); if(el) el.value=svc[f]||''; });
+            if(gst) gst.value=svc.gst||'0';
+            if(cat) cat.value=svc.category||'consultation';
+            if(dur) dur.value=svc.duration||'';
+            if(act) act.checked=svc.active!==false;
+        }
+    } else {
+        if(titleEl) titleEl.textContent='Add Service';
+        if(subEl) subEl.textContent='New service entry';
+        if(delBtn) delBtn.classList.add('hidden');
+    }
+    document.getElementById('svc-drawer-bg').classList.add('open');
+    setTimeout(function(){ document.getElementById('svc-drawer').classList.add('open'); },10);
+    if(typeof lucide!=='undefined') lucide.createIcons();
+};
+window.closeServiceDrawer = function() {
+    document.getElementById('svc-drawer').classList.remove('open');
+    setTimeout(function(){ document.getElementById('svc-drawer-bg').classList.remove('open'); },300);
+    window._editSvcId=null;
+};
+window.saveService = function() {
+    var name=document.getElementById('svc-name')&&document.getElementById('svc-name').value.trim();
+    var rate=Number(document.getElementById('svc-rate')&&document.getElementById('svc-rate').value||0);
+    if(!name){window.showToast&&window.showToast('Name required','error');return;}
+    if(!rate){window.showToast&&window.showToast('Rate required','error');return;}
+    var svc={ id:window._editSvcId||Date.now().toString(), name:name, category:document.getElementById('svc-category').value, duration:document.getElementById('svc-duration').value, rate:rate, gst:Number(document.getElementById('svc-gst').value||0), sac:document.getElementById('svc-sac').value.trim(), desc:document.getElementById('svc-desc').value.trim(), inclusions:document.getElementById('svc-inclusions').value.trim(), days:document.getElementById('svc-days').value.trim(), timing:document.getElementById('svc-timing').value.trim(), active:document.getElementById('svc-active').checked };
+    if(!window._editSvcId){ window.AppState.services=window.AppState.services||[]; window.AppState.services.push(svc); window.showToast&&window.showToast('Service added! ✅'); }
+    else { window.AppState.services=(window.AppState.services||[]).map(function(s){ return s.id===svc.id?Object.assign(s,svc):s; }); window.showToast&&window.showToast('Service updated! ✅'); }
+    window.saveServiceToStorage(); window.closeServiceDrawer(); window.renderServices();
+};
+window.deleteService = function() {
+    if(!window._editSvcId) return;
+    if(!confirm('Delete this service?')) return;
+    window.AppState.services=(window.AppState.services||[]).filter(function(s){ return s.id!==window._editSvcId; });
+    window.saveServiceToStorage(); window.closeServiceDrawer(); window.renderServices();
+    window.showToast&&window.showToast('Service deleted');
+};
+window.filterServiceCat = function(cat) {
+    window._svcCatFilter=cat;
+    ['all','consultation','treatment','therapy','package','other'].forEach(function(c){ var b=document.getElementById('scat-'+c); if(b) b.className='btn '+(c===cat?'btn-primary':'btn-ghost')+' btn-sm flex-shrink-0'; });
+    window.renderServices();
+};
+window.renderServices = function() {
+    var svcs=(window.AppState&&window.AppState.services)||[];
+    var q=(document.getElementById('services-search')||{}).value||'';
+    var cat=window._svcCatFilter||'all';
+    var filtered=svcs.filter(function(s){ return (!q||(s.name&&s.name.toLowerCase().includes(q.toLowerCase())))&&(cat==='all'||s.category===cat); });
+    var fmt=function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:0}); };
+    var el=document.getElementById('svc-total-count'); if(el) el.textContent=svcs.length;
+    var avg=svcs.length?Math.round(svcs.reduce(function(s,x){ return s+Number(x.rate||0); },0)/svcs.length):0;
+    var el2=document.getElementById('svc-avg-rate'); if(el2) el2.textContent=fmt(avg);
+    var billed=((window.AppState&&window.AppState.invoices)||[]).reduce(function(sum,inv){ return inv.status!=='final'?sum:sum+(inv.items||[]).filter(function(it){ return it.isService; }).reduce(function(s,it){ return s+Number(it.qty||1)*Number(it.rate||0); },0); },0);
+    var el3=document.getElementById('svc-total-billed'); if(el3) el3.textContent=fmt(billed);
+    var listEl=document.getElementById('services-list'); if(!listEl) return;
+    var icons={consultation:'🩺',treatment:'💆',therapy:'🌿',package:'📦',other:'⚙️'};
+    if(!filtered.length){ listEl.innerHTML='<div class="col-span-full p-8 text-center text-slate-400 flex flex-col items-center gap-2"><span class="text-4xl">✨</span><div class="font-semibold">No services found</div><button onclick="window.openServiceDrawer&&openServiceDrawer(null)" class="btn btn-primary btn-sm mt-2"><i data-lucide=\'plus\' class=\'w-3.5 h-3.5\'></i> Add Service</button></div>'; if(typeof lucide!=='undefined') lucide.createIcons({node:listEl}); return; }
+    listEl.innerHTML=filtered.map(function(s){
+        return '<div class="card card-hover p-4 '+(s.active===false?'opacity-60':'')+'">'
+        +'<div class="flex items-start justify-between mb-2"><div class="flex items-center gap-2"><span class="text-xl">'+(icons[s.category]||'⚙️')+'</span><div><h4 class="font-bold text-slate-800 text-sm">'+s.name+'</h4><div class="text-[10px] text-slate-400 capitalize">'+s.category+(s.duration?' · '+s.duration:'')+'</div></div></div><span class="badge '+(s.active!==false?'badge-green':'badge-slate')+' text-[10px]">'+(s.active!==false?'Active':'Off')+'</span></div>'
+        +(s.desc?'<p class="text-xs text-slate-500 mb-2 line-clamp-2">'+s.desc+'</p>':'')
+        +(s.inclusions?'<div class="text-[10px] text-emerald-600 mb-2 bg-emerald-50 p-2 rounded-lg">✓ '+s.inclusions+'</div>':'')
+        +'<div class="flex items-center justify-between mb-3"><div class="text-lg font-black text-purple-700">₹'+s.rate+'<span class="text-xs font-normal text-slate-400"> +'+s.gst+'% GST</span></div>'+(s.sac?'<div class="text-[10px] text-slate-400 bg-slate-50 px-2 py-0.5 rounded">SAC: '+s.sac+'</div>':'')+'</div>'
+        +(s.days||s.timing?'<div class="text-[10px] text-slate-400 mb-3">🕐 '+(s.days||'')+(s.days&&s.timing?' · ':''+(s.timing||''))+'</div>':'')
+        +'<div class="flex gap-2 pt-3 border-t border-slate-100"><button onclick="window.openServiceDrawer&&openServiceDrawer(\''+s.id+'\')" class="btn btn-ghost btn-sm flex-1 justify-center text-xs">Edit</button><button onclick="window.quickServiceInvoice&&quickServiceInvoice(\''+s.id+'\')" class="btn btn-primary btn-sm flex-1 justify-center text-xs"><i data-lucide=\'file-plus\' class=\'w-3 h-3\'></i> Invoice</button></div></div>';
+    }).join('');
+    if(typeof lucide!=='undefined') lucide.createIcons({node:listEl});
+};
+window.quickServiceInvoice=function(id){ var s=(window.AppState.services||[]).find(function(x){ return x.id===id; }); if(!s) return; if(window.switchTab) window.switchTab('invoice'); setTimeout(function(){ window.setInvoiceMode('services'); window.addServiceItem(s); },300); };
+window.exportServicesCSV=function(){ var svcs=(window.AppState&&window.AppState.services)||[]; if(!svcs.length){window.showToast&&window.showToast('No services','warning');return;} var h='Name,Category,Duration,Rate,GST%,SAC,Active\n'; var r=svcs.map(function(s){ return '"'+s.name+'","'+s.category+'","'+(s.duration||'')+'",'+s.rate+','+s.gst+',"'+(s.sac||'"),'+(s.active!==false); }).join('\n'); if(typeof downloadCSV==='function') downloadCSV(h+r,'Services.csv'); };
+</script>
+</body>
 </html>
