@@ -292,7 +292,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     </div>
     <!-- Title -->
     <div class="text-center">
-      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">Dev Ayurveda</h1>
+      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">My business</h1>
       <p class="splash-sub text-emerald-400 text-[11px] font-bold uppercase tracking-[.25em] mt-2">Professional ERP System</p>
     </div>
     <!-- Progress bar -->
@@ -447,7 +447,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
           <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">Dev Ayurveda</div>
+          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">My business</div>
           <div class="text-emerald-500 text-[9px] font-bold uppercase tracking-widest">Modular Pro ERP</div>
         </div>
       </div>
@@ -988,7 +988,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     <div class="flex items-center gap-4">
       <div class="w-14 h-14 bg-white/10 border border-white/20 rounded-xl overflow-hidden flex items-center justify-center" id="settings-logo-preview"><i data-lucide="building-2" class="w-7 h-7 text-emerald-400"></i></div>
       <div class="flex-1 min-w-0">
-        <div class="text-white font-bold text-base" id="settings-biz-display">Dev Ayurveda</div>
+        <div class="text-white font-bold text-base" id="settings-biz-display">My business</div>
         <div class="text-emerald-400 text-xs font-medium" id="settings-email-display">...</div>
         <div class="flex gap-2 mt-1.5"><span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px]">Active</span><span class="badge bg-white/10 text-white/60 text-[10px]">Admin</span></div>
       </div>
@@ -1223,6 +1223,82 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
   </button>
 </div>
 
+
+<!-- ===== EMPLOYEES ===== -->
+<div id="view-employees" class="tab">
+  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-5">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800">Employees</h2>
+      <p class="text-slate-400 text-sm">Staff management, roles & access control</p>
+    </div>
+    <button onclick="window.openEmployeeDrawer&&openEmployeeDrawer(null)" class="btn btn-primary btn-sm">
+      <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Add Employee
+    </button>
+  </div>
+
+  <!-- Sub-tabs: Employees | Activity Monitor -->
+  <div class="flex gap-1 bg-slate-100 rounded-xl p-1 mb-5 w-fit">
+    <button id="emptab-list-btn" onclick="window.switchEmpMainTab('list')" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-slate-800 shadow">👥 Staff</button>
+    <button id="emptab-activity-btn" onclick="window.switchEmpMainTab('activity')" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-500">📊 Activity</button>
+    <button id="emptab-requests-btn" onclick="window.switchEmpMainTab('requests')" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-500 relative">
+      🔔 Requests <span id="emp-req-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span>
+    </button>
+  </div>
+
+  <!-- STAFF LIST -->
+  <div id="emp-main-list">
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      <div class="stat text-center p-3"><div class="text-xl font-black text-blue-600" id="emp-total">0</div><div class="text-xs text-slate-400 mt-1">Total Staff</div></div>
+      <div class="stat text-center p-3"><div class="text-xl font-black text-emerald-600" id="emp-active">0</div><div class="text-xs text-slate-400 mt-1">Active</div></div>
+      <div class="stat text-center p-3"><div class="text-xl font-black text-amber-600" id="emp-salary">₹0</div><div class="text-xs text-slate-400 mt-1">Monthly Salary</div></div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="employees-list">
+      <div class="col-span-full p-8 text-center text-slate-400">
+        <i data-lucide="user-check" class="w-12 h-12 mx-auto mb-3 text-slate-200"></i>
+        <div class="font-semibold">No employees yet</div>
+        <div class="text-sm mt-1">Add your first employee to get started</div>
+        <button onclick="window.openEmployeeDrawer&&openEmployeeDrawer(null)" class="btn btn-primary btn-sm mt-4">
+          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Add First Employee
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY MONITOR -->
+  <div id="emp-main-activity" class="hidden">
+    <div class="card p-4 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="font-bold text-slate-800 text-sm flex items-center gap-2">
+          <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i> Employee Activity Log
+        </div>
+        <div class="flex gap-2">
+          <select id="activity-emp-filter" onchange="window.renderActivityLog()" class="inp text-xs w-auto py-1 bg-white">
+            <option value="">All Employees</option>
+          </select>
+          <button onclick="window.clearActivityLog()" class="btn btn-ghost btn-sm text-xs text-red-500">Clear</button>
+        </div>
+      </div>
+      <div id="activity-log-list" class="space-y-2 max-h-[60vh] overflow-y-auto">
+        <div class="text-center text-slate-400 text-sm py-8">No activity logged yet</div>
+      </div>
+    </div>
+
+    <div class="card p-4">
+      <div class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+        <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-600"></i> Per-Employee Summary
+      </div>
+      <div id="activity-summary" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- REQUESTS -->
+  <div id="emp-main-requests" class="hidden">
+    <div class="space-y-4" id="emp-requests-list">
+      <div class="text-center text-slate-400 text-sm py-8">No pending requests</div>
+    </div>
+  </div>
+</div>
+
       </div><!-- end max-w content -->
     </div><!-- end main-area -->
 
@@ -1335,80 +1411,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
   </div>
 </div>
 
-<!-- ===== EMPLOYEES ===== -->
-<div id="view-employees" class="tab">
-  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-5">
-    <div>
-      <h2 class="text-xl font-bold text-slate-800">Employees</h2>
-      <p class="text-slate-400 text-sm">Staff management, roles & access control</p>
-    </div>
-    <button onclick="window.openEmployeeDrawer&&openEmployeeDrawer(null)" class="btn btn-primary btn-sm">
-      <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Add Employee
-    </button>
-  </div>
-
-  <!-- Sub-tabs: Employees | Activity Monitor -->
-  <div class="flex gap-1 bg-slate-100 rounded-xl p-1 mb-5 w-fit">
-    <button id="emptab-list-btn" onclick="window.switchEmpMainTab('list')" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-slate-800 shadow">👥 Staff</button>
-    <button id="emptab-activity-btn" onclick="window.switchEmpMainTab('activity')" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-500">📊 Activity</button>
-    <button id="emptab-requests-btn" onclick="window.switchEmpMainTab('requests')" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-500 relative">
-      🔔 Requests <span id="emp-req-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">0</span>
-    </button>
-  </div>
-
-  <!-- STAFF LIST -->
-  <div id="emp-main-list">
-    <div class="grid grid-cols-3 gap-3 mb-5">
-      <div class="stat text-center p-3"><div class="text-xl font-black text-blue-600" id="emp-total">0</div><div class="text-xs text-slate-400 mt-1">Total Staff</div></div>
-      <div class="stat text-center p-3"><div class="text-xl font-black text-emerald-600" id="emp-active">0</div><div class="text-xs text-slate-400 mt-1">Active</div></div>
-      <div class="stat text-center p-3"><div class="text-xl font-black text-amber-600" id="emp-salary">₹0</div><div class="text-xs text-slate-400 mt-1">Monthly Salary</div></div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="employees-list">
-      <div class="col-span-full p-8 text-center text-slate-400">
-        <i data-lucide="user-check" class="w-12 h-12 mx-auto mb-3 text-slate-200"></i>
-        <div class="font-semibold">No employees yet</div>
-        <div class="text-sm mt-1">Add your first employee to get started</div>
-        <button onclick="window.openEmployeeDrawer&&openEmployeeDrawer(null)" class="btn btn-primary btn-sm mt-4">
-          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Add First Employee
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ACTIVITY MONITOR -->
-  <div id="emp-main-activity" class="hidden">
-    <div class="card p-4 mb-4">
-      <div class="flex items-center justify-between mb-3">
-        <div class="font-bold text-slate-800 text-sm flex items-center gap-2">
-          <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i> Employee Activity Log
-        </div>
-        <div class="flex gap-2">
-          <select id="activity-emp-filter" onchange="window.renderActivityLog()" class="inp text-xs w-auto py-1 bg-white">
-            <option value="">All Employees</option>
-          </select>
-          <button onclick="window.clearActivityLog()" class="btn btn-ghost btn-sm text-xs text-red-500">Clear</button>
-        </div>
-      </div>
-      <div id="activity-log-list" class="space-y-2 max-h-[60vh] overflow-y-auto">
-        <div class="text-center text-slate-400 text-sm py-8">No activity logged yet</div>
-      </div>
-    </div>
-
-    <div class="card p-4">
-      <div class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
-        <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-600"></i> Per-Employee Summary
-      </div>
-      <div id="activity-summary" class="space-y-3"></div>
-    </div>
-  </div>
-
-  <!-- REQUESTS -->
-  <div id="emp-main-requests" class="hidden">
-    <div class="space-y-4" id="emp-requests-list">
-      <div class="text-center text-slate-400 text-sm py-8">No pending requests</div>
-    </div>
-  </div>
-</div>
 
 <!-- Employee Drawer -->
 <div id="emp-drawer-bg" class="drawer-bg" onclick="window.closeEmployeeDrawer&&closeEmployeeDrawer()"></div>
@@ -2708,7 +2710,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const products = window.AppState.products || [];
                 const expenses = window.AppState.expenses || [];
                 const s = window.AppState.settings || {};
-                const bizName = s.businessName || 'Dev Ayurveda';
+                const bizName = s.businessName || 'My business';
                 const now = new Date().toLocaleString('en-IN');
 
                 // Helper: add sheet with header styling info
@@ -4394,7 +4396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.populateSettingsUI = function() {
             const s = window.AppState.settings;
             // Dynamic app name update — show user's business name everywhere
-            const bizName = s.businessName || 'Dev Ayurveda';
+            const bizName = s.businessName || 'My business';
             const sidebarName = document.getElementById('sidebar-biz-name'); if(sidebarName) sidebarName.textContent = bizName;
             const topbarTitle = document.getElementById('topbar-biz-name'); if(topbarTitle) topbarTitle.textContent = bizName;
             setVal('set-biz-name', s.businessName || ''); setVal('set-biz-gstin', s.gstin || ''); setVal('set-biz-address', s.address || ''); 
@@ -5955,7 +5957,7 @@ window.sendReminderWA = function(clientId) {
     var unpaidInvs = (window.AppState.invoices||[]).filter(function(i){ return i.client&&i.client.name===client.name && i.paymentStatus!=='paid' && i.status==='final'; });
     if(unpaidInvs.length===0) { window.showToast('No pending dues for this client','info'); return; }
     var total = unpaidInvs.reduce(function(s,i){ return s+Number(i.grandTotal||0); },0);
-    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
+    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'My business';
     var ids = unpaidInvs.map(function(i){ return i.id; }).join(', ');
     var fmt = function(n){ return '₹'+Number(n).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+bizName+'*\n\nDear '+client.name+',\n\nThis is a friendly reminder regarding your outstanding payment:\n\n📋 Invoice(s): '+ids+'\n💰 Total Due: *'+fmt(total)+'*\n\nKindly arrange payment at your earliest convenience.\n\nThank you for your trust! 🙏';
@@ -6046,7 +6048,7 @@ window.updateBirthdayReminders = function() {
         list.innerHTML = matches.map(function(c){
             var num = (c.mobile||'').replace(/\D/g,'');
             var waNum = num.length===10?'91'+num:num;
-            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda');
+            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'My business');
             return '<div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-pink-100 shadow-sm"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold text-sm">'+c.name.charAt(0)+'</div><div><div class="text-sm font-bold text-slate-800">'+c.name+'</div><div class="text-xs text-pink-500">🎂 Birthday Today!</div></div></div><a href="https://wa.me/'+waNum+'?text='+encodeURIComponent(msg)+'" target="_blank" class="btn btn-sm text-xs" style="background:#25D366;color:white;border:none">Wish 🎉</a></div>';
         }).join('');
     } else {
@@ -6491,7 +6493,7 @@ window.generateAIReport = function() {
   if(period.weekRange) exps = exps.filter(function(e){ var d=parseInt(e.date.split('-')[2]); return d>=period.weekRange[0] && d<=period.weekRange[1]; });
   var products = (window.AppState&&window.AppState.products)||[];
   var s = (window.AppState&&window.AppState.settings)||{};
-  var bizName = s.businessName || 'Dev Ayurveda';
+  var bizName = s.businessName || 'My business';
 
   var rev = invs.reduce(function(sum,i){ return sum+Number(i.grandTotal||0); },0);
   var exp = exps.reduce(function(sum,e){ return sum+Number(e.amount||0); },0);
@@ -6572,7 +6574,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </head>
 <body>
 <div class="hero">
-  <div class="badge">🌿 Dev Ayurveda ERP · AI Report</div>
+  <div class="badge">🌿 My business ERP · AI Report</div>
   <h1>${bizName}</h1>
   <p>${period.type === 'weekly' ? 'Weekly' : 'Monthly'} Business Intelligence Report</p>
   <p style="color:#475569;font-size:.78rem;margin-top:8px">Generated: ${now}</p>
@@ -6670,7 +6672,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </div>
 
 <div class="footer">
-  <p>Generated by <strong>${bizName}</strong> ERP · Dev Ayurveda Pro · ${now}</p>
+  <p>Generated by <strong>${bizName}</strong> ERP · My business Pro · ${now}</p>
   <p style="margin-top:4px;color:#cbd5e1">This report is confidential and intended for internal business use only.</p>
 </div>
 
@@ -6809,7 +6811,7 @@ window.autoSendWAInvoice = async function() {
     var invs = (window.AppState&&window.AppState.invoices)||[];
     var latest = invs.filter(function(i){ return i.status==='final'; }).sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); })[0];
     if(!latest) return;
-    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
+    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'My business';
     var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+biz+'*\n\nDear '+latest.client.name+',\n\nYour invoice is ready:\n\n📋 *'+latest.id+'*\n📅 '+latest.date+'\n💰 *'+fmt(latest.grandTotal)+'*\n\n'+(latest.paymentStatus==='paid'?'✅ Paid':'⏳ Payment Pending')+'\n\nThank you! 🙏';
     var mobile = (latest.client&&latest.client.mobile||'').replace(/\D/g,'');
@@ -7137,35 +7139,136 @@ window.getAIPriceSuggestion = function(productName, currentRate) {
 
 // ── DIGITAL INVOICE QR — Embedded HTML, No Firebase Link ─────
 window.generateDigitalInvoiceQR = function(inv) {
-    // Create a self-contained mini HTML page for the invoice
-    var s = (window.AppState&&window.AppState.settings)||{};
-    var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
-    var itemsHtml = (inv.items||[]).map(function(it,i){
-        return '<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:8px">'+(i+1)+'</td><td style="padding:8px">'+it.name+'</td><td style="padding:8px;text-align:center">'+it.qty+'</td><td style="padding:8px;text-align:right">'+fmt(it.rate)+'</td><td style="padding:8px;text-align:right;font-weight:700">'+fmt(Number(it.qty)*Number(it.rate))+'</td></tr>';
-    }).join('');
+    // Strategy: Store invoice in localStorage with a short key
+    // QR points to same app URL with ?view=KEY
+    // When scanned, app opens in view mode showing the invoice
+    try {
+        var s = (window.AppState&&window.AppState.settings)||{};
+        // Create a compact invoice object for QR sharing
+        var compact = {
+            id: inv.id,
+            date: inv.date,
+            biz: s.businessName || 'My business',
+            addr: s.address || '',
+            phone: s.phone || '',
+            gstin: s.gstin || '',
+            client: inv.client ? {name: inv.client.name, mobile: inv.client.mobile||''} : {},
+            items: (inv.items||[]).map(function(it){ return {n:it.name, q:it.qty, r:it.rate, g:it.gst||0}; }),
+            total: inv.grandTotal,
+            tax: inv.totalTax,
+            status: inv.paymentStatus,
+            mode: inv.paymentMode
+        };
 
-    var miniHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invoice '+inv.id+'</title>'
-        +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;padding:16px;max-width:480px;margin:0 auto;color:#1e293b}'
-        +'.hero{background:linear-gradient(135deg,#064e3b,#065f46);color:white;padding:20px;border-radius:12px;margin-bottom:16px}'
-        +'table{width:100%;border-collapse:collapse;font-size:13px}th{padding:8px;background:#f8fafc;text-align:left;font-size:11px;text-transform:uppercase;color:#94a3b8}'
-        +'.total-row{background:#f0fdf4;font-weight:700;font-size:15px}'
-        +'</style>'
-        +'<script>window.onload=function(){var a=document.createElement("a");a.href=window.location.href;var params=new URLSearchParams(a.search);if(params.get("download")){window.print();}}<\/script>'
-        +'</head><body>'
-        +'<div class="hero"><div style="font-size:18px;font-weight:700">'+s.businessName+'</div><div style="opacity:.7;font-size:11px;margin-top:2px">'+s.address+'</div></div>'
-        +'<div style="margin-bottom:12px"><div style="font-size:20px;font-weight:900;color:#059669">'+inv.id+'</div>'
-        +'<div style="font-size:13px;color:#64748b">Date: '+inv.date+' · Client: '+((inv.client&&inv.client.name)||'')+'</div></div>'
-        +'<table><thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>'+itemsHtml+'</tbody>'
-        +'<tfoot><tr class="total-row"><td colspan="4" style="padding:10px;text-align:right">Grand Total</td><td style="padding:10px;text-align:right;color:#059669">'+fmt(inv.grandTotal)+'</td></tr></tfoot>'
-        +'</table>'
-        +'<div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:8px;font-size:12px;color:#64748b;text-align:center">'+(inv.paymentStatus==='paid'?'✅ PAID':'⏳ Payment Pending')+'</div>'
-        +';
+        // Store with short key (first 8 chars of invoice ID + timestamp)
+        var key = 'inv_' + (inv.id||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,8);
+        localStorage.setItem('ayur_qr_'+key, JSON.stringify(compact));
 
-    // Encode as data URI and create QR
-    var encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(miniHTML);
-    if(window.generateLocalQR) return window.generateLocalQR(encoded);
+        // Build URL — same page + hash param
+        var baseUrl = window.location.href.split('?')[0].split('#')[0];
+        var viewUrl = baseUrl + '?view=' + key;
+
+        // Generate QR from this URL (much shorter than data URI)
+        if(window.generateLocalQR) return window.generateLocalQR(viewUrl);
+    } catch(e) { console.warn('QR gen error:', e); }
     return '';
 };
+
+// ── HANDLE ?view= PARAM ON PAGE LOAD ─────────────────────────
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    var viewKey = params.get('view');
+    if(!viewKey) return;
+
+    // Someone scanned the QR — show invoice viewer
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var data = null;
+            try { data = JSON.parse(localStorage.getItem('ayur_qr_' + viewKey) || 'null'); } catch(e) {}
+
+            if(!data) {
+                // Data not found — show error page
+                document.body.innerHTML = '<div style="font-family:sans-serif;max-width:480px;margin:40px auto;padding:20px;text-align:center">'
+                    + '<div style="font-size:48px;margin-bottom:16px">❌</div>'
+                    + '<h2 style="color:#1e293b;margin-bottom:8px">Invoice Not Found</h2>'
+                    + '<p style="color:#64748b;font-size:14px">This invoice link may have expired or is no longer available on this device.</p>'
+                    + '<a href="' + window.location.href.split('?')[0] + '" style="display:inline-block;margin-top:20px;padding:10px 24px;background:#059669;color:white;border-radius:8px;text-decoration:none;font-weight:700">Open App</a>'
+                    + '</div>';
+                return;
+            }
+
+            // Render invoice viewer
+            var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
+            var itemsHTML = (data.items||[]).map(function(it, i) {
+                return '<tr style="border-bottom:1px solid #f1f5f9">'
+                    + '<td style="padding:10px 8px;color:#64748b">'+(i+1)+'</td>'
+                    + '<td style="padding:10px 8px;font-weight:600">'+(it.n||'')+'</td>'
+                    + '<td style="padding:10px 8px;text-align:center">'+(it.q||1)+'</td>'
+                    + '<td style="padding:10px 8px;text-align:right">'+fmt(it.r||0)+'</td>'
+                    + '<td style="padding:10px 8px;text-align:right;font-weight:700;color:#059669">'+fmt(Number(it.q||1)*Number(it.r||0))+'</td>'
+                    + '</tr>';
+            }).join('');
+
+            var statusColor = data.status === 'paid' ? '#059669' : '#f59e0b';
+            var statusText = data.status === 'paid' ? '✅ PAID' : '⏳ Payment Pending';
+
+            document.body.innerHTML = '';
+            document.title = data.biz + ' — Invoice ' + data.id;
+
+            var container = document.createElement('div');
+            container.style.cssText = 'font-family:"Segoe UI",sans-serif;max-width:520px;margin:0 auto;padding:16px;background:#f8fafc;min-height:100vh;';
+            container.innerHTML = [
+                '<div style="background:linear-gradient(135deg,#064e3b,#065f46);color:white;padding:20px;border-radius:16px;margin-bottom:16px">',
+                    '<div style="font-size:20px;font-weight:800">'+data.biz+'</div>',
+                    '<div style="opacity:.7;font-size:11px;margin-top:3px">'+(data.addr||'')+(data.phone?' · 📞'+data.phone:'')+'</div>',
+                    data.gstin ? '<div style="opacity:.6;font-size:10px;margin-top:2px">GSTIN: '+data.gstin+'</div>' : '',
+                '</div>',
+                '<div style="background:white;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06)">',
+                    '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">',
+                        '<div>',
+                            '<div style="font-size:22px;font-weight:900;color:#059669">#'+data.id+'</div>',
+                            '<div style="font-size:12px;color:#64748b;margin-top:2px">📅 '+data.date+'</div>',
+                        '</div>',
+                        '<span style="background:'+statusColor+'20;color:'+statusColor+';padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700">'+statusText+'</span>',
+                    '</div>',
+                    '<div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:12px;font-size:13px">',
+                        '<div style="font-weight:700;color:#065f46">'+(data.client&&data.client.name||'')+'</div>',
+                        data.client&&data.client.mobile ? '<div style="color:#059669;margin-top:2px">📞 '+(data.client.mobile||'')+'</div>' : '',
+                    '</div>',
+                '</div>',
+                '<div style="background:white;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06)">',
+                    '<table style="width:100%;border-collapse:collapse;font-size:13px">',
+                        '<thead><tr style="background:#0f172a;color:white">',
+                            '<th style="padding:10px 8px;text-align:left;font-size:11px">#</th>',
+                            '<th style="padding:10px 8px;text-align:left;font-size:11px">Item</th>',
+                            '<th style="padding:10px 8px;text-align:center;font-size:11px">Qty</th>',
+                            '<th style="padding:10px 8px;text-align:right;font-size:11px">Rate</th>',
+                            '<th style="padding:10px 8px;text-align:right;font-size:11px">Total</th>',
+                        '</tr></thead>',
+                        '<tbody>'+itemsHTML+'</tbody>',
+                        '<tfoot><tr style="background:#f0fdf4;font-weight:700">',
+                            '<td colspan="4" style="padding:14px 8px;text-align:right;color:#065f46;font-size:14px">Grand Total</td>',
+                            '<td style="padding:14px 8px;text-align:right;color:#059669;font-size:18px;font-weight:900">'+fmt(data.total)+'</td>',
+                        '</tr></tfoot>',
+                    '</table>',
+                '</div>',
+                data.tax > 0 ? '<div style="background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);font-size:12px;display:flex;justify-content:space-between"><span style="color:#64748b">GST Included</span><span style="font-weight:700;color:#3b82f6">'+fmt(data.tax)+'</span></div>' : '',
+                '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:11px">',
+                    'Powered by My business ERP · Verify at business premises',
+                '</div>'
+            ].join('');
+            document.body.appendChild(container);
+
+            // Print/download button
+            var printBtn = document.createElement('button');
+            printBtn.style.cssText='position:fixed;bottom:20px;right:20px;background:#059669;color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(5,150,105,.4);';
+            printBtn.textContent = '🖨️ Print / Save PDF';
+            printBtn.onclick = function(){ window.print(); };
+            document.body.appendChild(printBtn);
+
+        }, 100);
+    });
+})();
 
 // Patch generateInvoiceHTML to use new digital QR
 (function(){
