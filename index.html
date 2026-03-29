@@ -481,7 +481,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
         <button onclick="window.openTrashModal&&openTrashModal()" class="btn btn-icon btn-ghost relative" title="Recycle Bin">
           <i data-lucide="trash-2" class="w-4 h-4 text-slate-400"></i>
         </button>
-        <button onclick="window.switchTab&&switchTab('inventory')" class="btn btn-icon btn-ghost relative" title="Low Stock Alert">
+        <button onclick="window.switchTab&&window.switchTab('inventory')" class="btn btn-icon btn-ghost relative" title="Low Stock Alert">
           <i data-lucide="package" class="w-4 h-4 text-slate-400"></i>
           <span id="stock-alert-badge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full items-center justify-center hidden">0</span>
         </button>
@@ -1550,7 +1550,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
 
 
 <!-- FAB -->
-<button id="fab" onclick="window.switchTab&&switchTab('invoice')" title="New Invoice">
+<button id="fab" onclick="window.switchTab&&window.switchTab('invoice')" title="New Invoice">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 </button>
 
@@ -3150,7 +3150,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     setupFirestoreListeners();
                     renderNavigation();
-                    switchTab(window.AppState.activeTab);
+                    window.switchTab(window.AppState.activeTab);
                     populateSessionInfo();
                     // Auto-backup on login from any existing local backup
                     safeLocalSave();
@@ -3441,13 +3441,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 dBtn.className = `nav-item ${isActive ? 'active' : ''}`;
                 dBtn.setAttribute('data-tab', item.id);
                 dBtn.innerHTML = `<i data-lucide="${item.icon}" class="w-4 h-4"></i> <span>${item.label}</span> ${badge}`;
-                dBtn.onclick = () => switchTab(item.id); desktopNav.appendChild(dBtn);
+                dBtn.onclick = () => window.switchTab(item.id); desktopNav.appendChild(dBtn);
 
                 const mBtn = document.createElement('button');
                 mBtn.className = `mobile-nav-item ${isActive ? 'active' : ''}`;
                 mBtn.setAttribute('data-tab', item.id);
                 mBtn.innerHTML = `<i data-lucide="${item.icon}" class="w-5 h-5"></i><span>${item.label.split(' ')[0]}</span>${lowStockCount > 0 && item.id === 'inventory' ? '<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>' : ''}`;
-                if(!item.mobileHidden) { mBtn.onclick = () => switchTab(item.id); mobileNav.appendChild(mBtn); }
+                if(!item.mobileHidden) { mBtn.onclick = () => window.switchTab(item.id); mobileNav.appendChild(mBtn); }
             });
             if (typeof lucide !== 'undefined') lucide.createIcons();
             // Re-apply employee nav restrictions after every render
@@ -3457,7 +3457,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ── MASTER SWITCH TAB — handles all routing, employee restrictions, tab callbacks ──
-        var EMP_TAB_PERMS = {
+        window.EMP_TAB_PERMS = {
             'dashboard':'dash_view', 'daybook':'daybook_view', 'invoice':'inv_create',
             'records':'rec_view', 'inventory':'inv_tab', 'services':'svc_view',
             'expenses':'exp_view', 'clients':'client_view', 'employees':'emp_view',
@@ -3467,13 +3467,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.switchTab = function(tabId) {
             // Employee permission check
             if(window._isEmployeeSession) {
-                var reqPerm = EMP_TAB_PERMS[tabId];
+                var reqPerm = window.EMP_TAB_PERMS[tabId];
                 if(reqPerm && !window._employeePermissions[reqPerm]) {
                     window.showToast && window.showToast('🔒 Access denied: ' + tabId, 'error');
                     // Go to first allowed tab instead
                     if(tabId !== 'dashboard') {
-                        var allowed = Object.keys(EMP_TAB_PERMS).find(function(t){
-                            var p = EMP_TAB_PERMS[t];
+                        var allowed = Object.keys(window.EMP_TAB_PERMS).find(function(t){
+                            var p = window.EMP_TAB_PERMS[t];
                             return !p || window._employeePermissions[p];
                         });
                         if(allowed && allowed !== tabId) window.switchTab(allowed);
@@ -7853,44 +7853,25 @@ window.applyEmployeeRestrictions=function(){
     if(!window._isEmployeeSession) return;
     var perms = window._employeePermissions || {};
 
-    // Map of nav tab ids to required permission
-    var navPerms = {
-        'dashboard': 'dash_view',
-        'daybook': 'daybook_view',
-        'invoice': 'inv_create',
-        'records': 'rec_view',
-        'inventory': 'inv_tab',
-        'services': 'svc_view',
-        'expenses': 'exp_view',
-        'clients': 'client_view',
-        'employees': 'emp_view',
-        'ai-report': 'ai_report',
-        'settings': 'settings_view'
-    };
-
     // Tab restriction now handled in master switchTab
 
     // Hide nav items immediately (before render)
+    var EMP_TAB_PERMS = window.EMP_TAB_PERMS || {};
     var applyNavHide = function() {
         document.querySelectorAll('.nav-item[data-tab]').forEach(function(btn){
             var tabId = btn.getAttribute('data-tab');
-            var required = navPerms[tabId];
+            var required = EMP_TAB_PERMS[tabId];
             if(required && !perms[required]) {
                 btn.style.display='none';
             }
         });
-        // Also check by text content as fallback
-        document.querySelectorAll('.nav-item').forEach(function(btn){
-            var txt=btn.textContent.trim().toLowerCase();
-            if(txt.includes('expense')&&!perms['exp_view']) btn.style.display='none';
-            if(txt.includes('employees')&&!perms['emp_view']) btn.style.display='none';
-            if(txt.includes('settings')&&!perms['settings_view']) btn.style.display='none';
-            if(txt.includes('ai report')&&!perms['ai_report']) btn.style.display='none';
-            if(txt.includes('daybook')&&!perms['daybook_view']) btn.style.display='none';
-            if(txt.includes('records')&&!perms['rec_view']) btn.style.display='none';
-            if(txt.includes('inventory')&&!perms['inv_tab']) btn.style.display='none';
-            if(txt.includes('services')&&!perms['svc_view']) btn.style.display='none';
-            if(txt.includes('clients')&&!perms['client_view']) btn.style.display='none';
+        // Fallback: text-based hiding for mobile nav too
+        document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(function(btn){
+            var tabId = btn.getAttribute('data-tab');
+            if(tabId) {
+                var required = EMP_TAB_PERMS[tabId];
+                if(required && !perms[required]) btn.style.display='none';
+            }
         });
     };
 
@@ -8176,6 +8157,9 @@ window.openPermissionRequest=function(empEmail){
     window.openRoleDrawer(emp.id);
 };
 </script>
+</body>
+</html>
+
 <script>
 // ================================================================
 // EMPLOYEE MAIN TAB SWITCHER + ACTIVITY MONITOR + REQUESTS
@@ -8484,6 +8468,3 @@ window.handleEmployeeLogin = async function(e) {
     }, 1000);
 };
 </script>
-</body>
-</html>
-
