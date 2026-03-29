@@ -292,7 +292,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     </div>
     <!-- Title -->
     <div class="text-center">
-      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">My business</h1>
+      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">Dev Ayurveda</h1>
       <p class="splash-sub text-emerald-400 text-[11px] font-bold uppercase tracking-[.25em] mt-2">Professional ERP System</p>
     </div>
     <!-- Progress bar -->
@@ -447,7 +447,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
           <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">My business</div>
+          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">Dev Ayurveda</div>
           <div class="text-emerald-500 text-[9px] font-bold uppercase tracking-widest">Modular Pro ERP</div>
         </div>
       </div>
@@ -980,7 +980,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
 <div id="view-settings" class="tab">
   <div class="flex items-center justify-between mb-5">
     <div><h2 class="text-xl font-bold text-slate-800">Settings</h2><p class="text-slate-400 text-sm">Business profile & configuration</p></div>
-    <button onclick="handleLogout()" class="btn btn-danger btn-sm"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out</button>
+    <button onclick="window._isEmployeeSession ? window.employeeLogout() : handleLogout()" class="btn btn-danger btn-sm"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out</button>
   </div>
 
   <!-- Profile Hero -->
@@ -988,7 +988,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     <div class="flex items-center gap-4">
       <div class="w-14 h-14 bg-white/10 border border-white/20 rounded-xl overflow-hidden flex items-center justify-center" id="settings-logo-preview"><i data-lucide="building-2" class="w-7 h-7 text-emerald-400"></i></div>
       <div class="flex-1 min-w-0">
-        <div class="text-white font-bold text-base" id="settings-biz-display">My business</div>
+        <div class="text-white font-bold text-base" id="settings-biz-display">Dev Ayurveda</div>
         <div class="text-emerald-400 text-xs font-medium" id="settings-email-display">...</div>
         <div class="flex gap-2 mt-1.5"><span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px]">Active</span><span class="badge bg-white/10 text-white/60 text-[10px]">Admin</span></div>
       </div>
@@ -1454,7 +1454,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
           </select>
         </div>
         <div><label class="lbl">Designation</label><input type="text" id="emp-designation" class="inp" placeholder="e.g. Billing Staff"></div>
-        <div><label class="lbl">Monthly Salary (₹)</label><input type="number" id="emp-salary" class="inp" placeholder="0"></div>
+        <div><label class="lbl">Monthly Salary (₹)</label><input type="number" id="emp-salary-input" class="inp" placeholder="0"></div>
         <div><label class="lbl">Join Date</label><input type="date" id="emp-join-date" class="inp"></div>
         <div class="col-span-2"><label class="lbl">Address</label><input type="text" id="emp-address" class="inp" placeholder="Employee address"></div>
         <div class="col-span-2"><label class="lbl">Notes</label><textarea id="emp-notes" rows="2" class="inp resize-none" placeholder="Any notes..."></textarea></div>
@@ -2622,7 +2622,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, signOut, onAuthStateChanged, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, writeBatch, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const defaultAppId = 'dev-ayurveda-pro-auth';
@@ -2636,7 +2636,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let app, auth, db;
         try {
             app = initializeApp(firebaseConfig); 
-            auth = getAuth(app); 
+            auth = getAuth(app);
+            // ✅ Persist login across browser restarts
+            setPersistence(auth, browserLocalPersistence).catch(function(e){ console.warn('Persistence:', e); });
             // ✅ Firebase 11.x offline persistence (new API — replaces deprecated enableIndexedDbPersistence)
             try {
                 db = initializeFirestore(app, {
@@ -2710,7 +2712,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const products = window.AppState.products || [];
                 const expenses = window.AppState.expenses || [];
                 const s = window.AppState.settings || {};
-                const bizName = s.businessName || 'My business';
+                const bizName = s.businessName || 'Dev Ayurveda';
                 const now = new Date().toLocaleString('en-IN');
 
                 // Helper: add sheet with header styling info
@@ -3167,6 +3169,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Auto-backup on login from any existing local backup
                     safeLocalSave();
                 } else {
+                    // Check for saved employee session first
+                    if(window._restoreEmployeeSession && window._restoreEmployeeSession()) {
+                        // Employee session restored — don't show auth screen
+                        authResolved = true;
+                        return;
+                    }
                     // Critical Fix: Hard reset state and CLEAR listeners on logout to prevent any data/image leaking
                     clearFirestoreListeners();
                     window.AppState = getInitialState();
@@ -3285,7 +3293,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.handleLogout = async function() {
             try {
                 sessionStorage.removeItem('ayur_unlocked');
-                clearFirestoreListeners(); // Make doubly sure listeners are stopped before auth switches state
+                localStorage.removeItem('ayur_emp_session'); // clear any employee session too
+                clearFirestoreListeners();
                 await signOut(auth);
                 window.showToast("Signed out successfully.");
             } catch(e) { window.showToast("Error signing out", "error"); }
@@ -3444,15 +3453,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const dBtn = document.createElement('button');
                 dBtn.className = `nav-item ${isActive ? 'active' : ''}`;
+                dBtn.setAttribute('data-tab', item.id);
                 dBtn.innerHTML = `<i data-lucide="${item.icon}" class="w-4 h-4"></i> <span>${item.label}</span> ${badge}`;
                 dBtn.onclick = () => switchTab(item.id); desktopNav.appendChild(dBtn);
 
                 const mBtn = document.createElement('button');
                 mBtn.className = `mobile-nav-item ${isActive ? 'active' : ''}`;
+                mBtn.setAttribute('data-tab', item.id);
                 mBtn.innerHTML = `<i data-lucide="${item.icon}" class="w-5 h-5"></i><span>${item.label.split(' ')[0]}</span>${lowStockCount > 0 && item.id === 'inventory' ? '<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>' : ''}`;
                 if(!item.mobileHidden) { mBtn.onclick = () => switchTab(item.id); mobileNav.appendChild(mBtn); }
             });
             if (typeof lucide !== 'undefined') lucide.createIcons();
+            // Re-apply employee nav restrictions after every render
+            if(window._isEmployeeSession) {
+                setTimeout(function(){ window.applyEmployeeRestrictions && window.applyEmployeeRestrictions(); }, 30);
+            }
         }
 
         window.switchTab = function(tabId) {
@@ -4396,7 +4411,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.populateSettingsUI = function() {
             const s = window.AppState.settings;
             // Dynamic app name update — show user's business name everywhere
-            const bizName = s.businessName || 'My business';
+            const bizName = s.businessName || 'Dev Ayurveda';
             const sidebarName = document.getElementById('sidebar-biz-name'); if(sidebarName) sidebarName.textContent = bizName;
             const topbarTitle = document.getElementById('topbar-biz-name'); if(topbarTitle) topbarTitle.textContent = bizName;
             setVal('set-biz-name', s.businessName || ''); setVal('set-biz-gstin', s.gstin || ''); setVal('set-biz-address', s.address || ''); 
@@ -5957,7 +5972,7 @@ window.sendReminderWA = function(clientId) {
     var unpaidInvs = (window.AppState.invoices||[]).filter(function(i){ return i.client&&i.client.name===client.name && i.paymentStatus!=='paid' && i.status==='final'; });
     if(unpaidInvs.length===0) { window.showToast('No pending dues for this client','info'); return; }
     var total = unpaidInvs.reduce(function(s,i){ return s+Number(i.grandTotal||0); },0);
-    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'My business';
+    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
     var ids = unpaidInvs.map(function(i){ return i.id; }).join(', ');
     var fmt = function(n){ return '₹'+Number(n).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+bizName+'*\n\nDear '+client.name+',\n\nThis is a friendly reminder regarding your outstanding payment:\n\n📋 Invoice(s): '+ids+'\n💰 Total Due: *'+fmt(total)+'*\n\nKindly arrange payment at your earliest convenience.\n\nThank you for your trust! 🙏';
@@ -6048,7 +6063,7 @@ window.updateBirthdayReminders = function() {
         list.innerHTML = matches.map(function(c){
             var num = (c.mobile||'').replace(/\D/g,'');
             var waNum = num.length===10?'91'+num:num;
-            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'My business');
+            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda');
             return '<div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-pink-100 shadow-sm"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold text-sm">'+c.name.charAt(0)+'</div><div><div class="text-sm font-bold text-slate-800">'+c.name+'</div><div class="text-xs text-pink-500">🎂 Birthday Today!</div></div></div><a href="https://wa.me/'+waNum+'?text='+encodeURIComponent(msg)+'" target="_blank" class="btn btn-sm text-xs" style="background:#25D366;color:white;border:none">Wish 🎉</a></div>';
         }).join('');
     } else {
@@ -6493,7 +6508,7 @@ window.generateAIReport = function() {
   if(period.weekRange) exps = exps.filter(function(e){ var d=parseInt(e.date.split('-')[2]); return d>=period.weekRange[0] && d<=period.weekRange[1]; });
   var products = (window.AppState&&window.AppState.products)||[];
   var s = (window.AppState&&window.AppState.settings)||{};
-  var bizName = s.businessName || 'My business';
+  var bizName = s.businessName || 'Dev Ayurveda';
 
   var rev = invs.reduce(function(sum,i){ return sum+Number(i.grandTotal||0); },0);
   var exp = exps.reduce(function(sum,e){ return sum+Number(e.amount||0); },0);
@@ -6574,7 +6589,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </head>
 <body>
 <div class="hero">
-  <div class="badge">🌿 My business ERP · AI Report</div>
+  <div class="badge">🌿 Dev Ayurveda ERP · AI Report</div>
   <h1>${bizName}</h1>
   <p>${period.type === 'weekly' ? 'Weekly' : 'Monthly'} Business Intelligence Report</p>
   <p style="color:#475569;font-size:.78rem;margin-top:8px">Generated: ${now}</p>
@@ -6672,7 +6687,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </div>
 
 <div class="footer">
-  <p>Generated by <strong>${bizName}</strong> ERP · My business Pro · ${now}</p>
+  <p>Generated by <strong>${bizName}</strong> ERP · Dev Ayurveda Pro · ${now}</p>
   <p style="margin-top:4px;color:#cbd5e1">This report is confidential and intended for internal business use only.</p>
 </div>
 
@@ -6811,7 +6826,7 @@ window.autoSendWAInvoice = async function() {
     var invs = (window.AppState&&window.AppState.invoices)||[];
     var latest = invs.filter(function(i){ return i.status==='final'; }).sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); })[0];
     if(!latest) return;
-    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'My business';
+    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
     var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+biz+'*\n\nDear '+latest.client.name+',\n\nYour invoice is ready:\n\n📋 *'+latest.id+'*\n📅 '+latest.date+'\n💰 *'+fmt(latest.grandTotal)+'*\n\n'+(latest.paymentStatus==='paid'?'✅ Paid':'⏳ Payment Pending')+'\n\nThank you! 🙏';
     var mobile = (latest.client&&latest.client.mobile||'').replace(/\D/g,'');
@@ -7148,7 +7163,7 @@ window.generateDigitalInvoiceQR = function(inv) {
         var compact = {
             id: inv.id,
             date: inv.date,
-            biz: s.businessName || 'My business',
+            biz: s.businessName || 'Dev Ayurveda',
             addr: s.address || '',
             phone: s.phone || '',
             gstin: s.gstin || '',
@@ -7254,7 +7269,7 @@ window.generateDigitalInvoiceQR = function(inv) {
                 '</div>',
                 data.tax > 0 ? '<div style="background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);font-size:12px;display:flex;justify-content:space-between"><span style="color:#64748b">GST Included</span><span style="font-weight:700;color:#3b82f6">'+fmt(data.tax)+'</span></div>' : '',
                 '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:11px">',
-                    'Powered by My business ERP · Verify at business premises',
+                    'Powered by Dev Ayurveda ERP · Verify at business premises',
                 '</div>'
             ].join('');
             document.body.appendChild(container);
@@ -7744,42 +7759,208 @@ window.handleEmployeeLogin=function(e){
     var email=(document.getElementById('emp-login-email')||{}).value||'';
     var password=(document.getElementById('emp-login-password')||{}).value||'';
     var errEl=document.getElementById('emp-login-error');
-    if(!bizUid){if(errEl){errEl.textContent='Select a business first';errEl.classList.remove('hidden');}return;}
-    if(!email||!password){if(errEl){errEl.textContent='Email and password required';errEl.classList.remove('hidden');}return;}
+    var btn=document.getElementById('emp-login-btn');
+    if(!bizUid){if(errEl){errEl.textContent='Pehle business select karo';errEl.classList.remove('hidden');}return;}
+    if(!email||!password){if(errEl){errEl.textContent='Email aur password zaruri hai';errEl.classList.remove('hidden');}return;}
+    if(btn)btn.innerHTML='<i data-lucide="loader" class="w-4 h-4"></i> Signing in...';
     var emps=[];try{emps=JSON.parse(localStorage.getItem('ayur_employees_'+bizUid)||'[]');}catch(ex){}
-    var emp=emps.find(function(emp){return emp.email===email&&emp.password===password&&emp.active!==false;});
-    if(!emp){if(errEl){errEl.textContent='Invalid credentials or account inactive';errEl.classList.remove('hidden');}return;}
-    window._isEmployeeSession=true;window._employeeData=emp;window._employeeOwnerUid=bizUid;window._employeePermissions=emp.permissions||{};
-    var cfg=JSON.parse(localStorage.getItem('ayur_settings_cache_'+bizUid)||'{}');
-    if(window.AppState){window.AppState.settings=Object.assign(window.AppState.settings||{},cfg);window.AppState._isEmployee=true;window.AppState._empData=emp;}
-    var authC=document.getElementById('auth-wrap');if(authC)authC.style.display='none';
-    var appC=document.getElementById('app');if(appC)appC.style.display='flex';
+    var emp=emps.find(function(e2){return e2.email===email&&e2.password===password&&e2.active!==false;});
+    if(!emp){
+        if(errEl){errEl.textContent='Invalid credentials ya account inactive hai';errEl.classList.remove('hidden');}
+        if(btn)btn.innerHTML='<i data-lucide="log-in" class="w-4 h-4"></i> Sign In as Employee';
+        return;
+    }
+    // Save session to localStorage for persistence across reloads
+    var session={empId:emp.id,bizUid:bizUid,email:email,loginAt:new Date().toISOString()};
+    localStorage.setItem('ayur_emp_session',JSON.stringify(session));
+
+    window._startEmployeeSession(emp, bizUid);
+};
+
+window._startEmployeeSession = function(emp, bizUid) {
+    window._isEmployeeSession = true;
+    window._employeeData = emp;
+    window._employeeOwnerUid = bizUid;
+    window._employeePermissions = emp.permissions || {};
+
+    var cfg = JSON.parse(localStorage.getItem('ayur_settings_cache_'+bizUid)||'{}');
+    if(!window.AppState) window.AppState = {};
+    window.AppState.settings = Object.assign(window.AppState.settings||{}, cfg);
+    window.AppState._isEmployee = true;
+    window.AppState._empData = emp;
+    // Employee reads owner's data — set the user UID to owner's UID
+    window.AppState.user = window.AppState.user || { uid: bizUid, email: emp.email };
+
+    var authC = document.getElementById('auth-wrap'); if(authC) authC.style.display='none';
+    var appC  = document.getElementById('app');       if(appC)  appC.style.display='flex';
+
+    // Load owner's Firestore data
+    if(window.setupFirestoreListeners) {
+        // Temporarily fake the user uid to owner's so Firestore listeners use correct path
+        var origUid = window.AppState.user && window.AppState.user.uid;
+        window.AppState.user = { uid: bizUid, email: emp.email };
+        try { window.setupFirestoreListeners(); } catch(e) {}
+    }
+
+    // Update sidebar display
+    var snEl = document.getElementById('sidebar-biz-name');
+    if(snEl) snEl.textContent = cfg.businessName || 'My Business';
+    var emailEl = document.getElementById('user-email');
+    if(emailEl) emailEl.textContent = emp.email;
+    var avEl = document.getElementById('user-avatar');
+    if(avEl) avEl.textContent = emp.name.charAt(0).toUpperCase();
+
+    if(window.renderNavigation) window.renderNavigation();
+
+    // Apply restrictions BEFORE tab switch (no flicker)
     window.applyEmployeeRestrictions();
-    window.showToast&&window.showToast('Welcome '+emp.name+'! 👋','info');
-    if(window.switchTab)window.switchTab('dashboard');
+
+    setTimeout(function(){
+        if(window.switchTab) window.switchTab('dashboard');
+        window.showToast && window.showToast('Welcome '+emp.name+'! 👋', 'info');
+    }, 200);
+};
+
+// ── EMPLOYEE LOGOUT ───────────────────────────────────────────
+window.employeeLogout = function() {
+    localStorage.removeItem('ayur_emp_session');
+    window._isEmployeeSession = false;
+    window._employeeData = null;
+    window._employeeOwnerUid = null;
+    window._employeePermissions = {};
+    // Remove banner
+    var banner = document.getElementById('employee-banner');
+    if(banner) banner.remove();
+    // Reset AppState and show auth
+    if(window.AppState) { window.AppState._isEmployee=false; window.AppState._empData=null; }
+    var authC = document.getElementById('auth-wrap');
+    if(authC) { authC.style.display='block'; window.setAuthMode('employee'); }
+    var appC = document.getElementById('app'); if(appC) appC.style.display='none';
+};
+
+// ── CHECK EMPLOYEE SESSION ON PAGE LOAD ───────────────────────
+window._restoreEmployeeSession = function() {
+    var session = null;
+    try { session = JSON.parse(localStorage.getItem('ayur_emp_session')||'null'); } catch(e){}
+    if(!session || !session.bizUid || !session.empId) return false;
+    var emps = [];
+    try { emps = JSON.parse(localStorage.getItem('ayur_employees_'+session.bizUid)||'[]'); } catch(e){}
+    var emp = emps.find(function(e){ return e.id===session.empId && e.active!==false; });
+    if(!emp) { localStorage.removeItem('ayur_emp_session'); return false; }
+    window._startEmployeeSession(emp, session.bizUid);
+    return true;
 };
 
 window.applyEmployeeRestrictions=function(){
-    if(!window._isEmployeeSession)return;
-    setTimeout(function(){
-        var banner=document.getElementById('employee-banner');
-        if(!banner){
-            banner=document.createElement('div');banner.id='employee-banner';
-            banner.style.cssText='background:linear-gradient(135deg,#1e3a8a,#3730a3);color:white;padding:8px 16px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;';
-            banner.innerHTML='<span>👤 Employee: '+(window._employeeData&&window._employeeData.name||'Staff')+'</span><button onclick="window.requestPermissionExpansion()" style="background:rgba(255,255,255,.15);border:none;color:white;padding:3px 10px;border-radius:8px;font-size:10px;cursor:pointer;font-weight:700;">Request Access ↗</button>';
-            var topbar=document.getElementById('topbar');if(topbar&&topbar.parentElement)topbar.parentElement.insertBefore(banner,topbar.nextSibling);
-        }
-        // Hide nav items based on permissions
-        var perms=window._employeePermissions;
+    if(!window._isEmployeeSession) return;
+    var perms = window._employeePermissions || {};
+
+    // Map of nav tab ids to required permission
+    var navPerms = {
+        'dashboard': 'dash_view',
+        'daybook': 'daybook_view',
+        'invoice': 'inv_create',
+        'records': 'rec_view',
+        'inventory': 'inv_tab',
+        'services': 'svc_view',
+        'expenses': 'exp_view',
+        'clients': 'client_view',
+        'employees': 'emp_view',
+        'ai-report': 'ai_report',
+        'settings': 'settings_view'
+    };
+
+    // Override switchTab to block restricted tabs
+    if(!window.switchTab._empRestricted) {
+        window.switchTab._empRestricted = true;
+        var origSwitch = window.switchTab;
+        window.switchTab = function(tabId) {
+            if(window._isEmployeeSession) {
+                var required = navPerms[tabId];
+                if(required && !window._employeePermissions[required]) {
+                    window.showToast&&window.showToast('Access not allowed: ' + tabId, 'error');
+                    window._showAccessDenied(tabId);
+                    return;
+                }
+            }
+            origSwitch(tabId);
+        };
+    }
+
+    // Hide nav items immediately (before render)
+    var applyNavHide = function() {
+        document.querySelectorAll('.nav-item[data-tab]').forEach(function(btn){
+            var tabId = btn.getAttribute('data-tab');
+            var required = navPerms[tabId];
+            if(required && !perms[required]) {
+                btn.style.display='none';
+            }
+        });
+        // Also check by text content as fallback
         document.querySelectorAll('.nav-item').forEach(function(btn){
             var txt=btn.textContent.trim().toLowerCase();
-            if(txt.includes('expense')&&!perms['exp_view'])btn.style.display='none';
-            if(txt.includes('employee')&&!perms['emp_view'])btn.style.display='none';
-            if(txt.includes('settings')&&!perms['settings_view'])btn.style.display='none';
-            if(txt.includes('ai report')&&!perms['ai_report'])btn.style.display='none';
-            if(txt.includes('daybook')&&!perms['daybook_view'])btn.style.display='none';
+            if(txt.includes('expense')&&!perms['exp_view']) btn.style.display='none';
+            if(txt.includes('employees')&&!perms['emp_view']) btn.style.display='none';
+            if(txt.includes('settings')&&!perms['settings_view']) btn.style.display='none';
+            if(txt.includes('ai report')&&!perms['ai_report']) btn.style.display='none';
+            if(txt.includes('daybook')&&!perms['daybook_view']) btn.style.display='none';
+            if(txt.includes('records')&&!perms['rec_view']) btn.style.display='none';
+            if(txt.includes('inventory')&&!perms['inv_tab']) btn.style.display='none';
+            if(txt.includes('services')&&!perms['svc_view']) btn.style.display='none';
+            if(txt.includes('clients')&&!perms['client_view']) btn.style.display='none';
         });
-    },600);
+    };
+
+    applyNavHide();
+    // Re-apply after nav renders (catches dynamic injection)
+    setTimeout(applyNavHide, 500);
+    setTimeout(applyNavHide, 1500);
+
+    // Show employee banner
+    var makeBanner = function() {
+        var existing = document.getElementById('employee-banner');
+        if(existing) return;
+        var banner=document.createElement('div');
+        banner.id='employee-banner';
+        banner.style.cssText='background:linear-gradient(135deg,#1e3a8a,#3730a3);color:white;padding:8px 16px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:50;';
+        banner.innerHTML='<span>👤 Employee: '+(window._employeeData&&window._employeeData.name||'Staff')+'</span>'
+            +'<div style="display:flex;gap:6px;align-items:center">'
+            +'<button onclick="window.requestPermissionExpansion()" style="background:rgba(255,255,255,.15);border:none;color:white;padding:3px 10px;border-radius:8px;font-size:10px;cursor:pointer;font-weight:700;">Request Access ↗</button>'
+            +'<button onclick="if(confirm(\'Sign out?\'))window.employeeLogout()" style="background:rgba(239,68,68,.3);border:none;color:white;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;font-weight:700;">Sign Out</button>'
+            +'</div>';
+        var topbar=document.getElementById('topbar');
+        if(topbar&&topbar.parentElement) topbar.parentElement.insertBefore(banner, topbar);
+    };
+    makeBanner();
+    setTimeout(makeBanner, 400);
+
+    // Hide FAB if no invoice permission
+    if(!perms['inv_create']) {
+        var fab = document.getElementById('fab');
+        if(fab) fab.style.display='none';
+    }
+};
+
+window._showAccessDenied = function(tabId) {
+    // Show access denied overlay on the current tab area
+    var permName = ({
+        'daybook':'View Daybook','invoice':'Create Invoice','records':'View Records',
+        'inventory':'View Inventory','services':'View Services','expenses':'View Expenses',
+        'clients':'View Clients','employees':'View Employees','ai-report':'AI Report',
+        'settings':'View Settings'
+    })[tabId] || tabId;
+
+    // Switch to dashboard as fallback
+    var dashPerms = window._employeePermissions || {};
+    if(dashPerms['dash_view'] && window.switchTab && !window.switchTab._inDeny) {
+        window.switchTab._inDeny = true;
+        // Show a toast then go to dashboard
+        setTimeout(function(){
+            window.switchTab._inDeny = false;
+        }, 200);
+    }
+
+    window.showToast && window.showToast('🔒 "'+ permName +'" permission required. Request from owner.', 'error');
 };
 
 window.empForgotPassword=function(){
@@ -7787,6 +7968,8 @@ window.empForgotPassword=function(){
     var bizUid=window._selectedEmpBizUid;
     if(!email||!bizUid){window.showToast&&window.showToast('Enter email and select business first','warning');return;}
     var reqs=JSON.parse(localStorage.getItem('ayur_pw_requests_'+bizUid)||'[]');
+    var already=reqs.find(function(r){return r.email===email&&r.status==='pending';});
+    if(already){window.showToast&&window.showToast('Request already pending with owner','info');return;}
     reqs.push({email:email,requestedAt:new Date().toISOString(),status:'pending'});
     localStorage.setItem('ayur_pw_requests_'+bizUid,JSON.stringify(reqs));
     window.showToast&&window.showToast('Password reset request sent to owner ✅','info');
@@ -7797,10 +7980,53 @@ window.requestPermissionExpansion=function(){
     if(!emp||!bizUid)return;
     var reqs=JSON.parse(localStorage.getItem('ayur_perm_requests_'+bizUid)||'[]');
     var exist=reqs.find(function(r){return r.empEmail===emp.email&&r.status==='pending';});
-    if(exist){window.showToast&&window.showToast('Request already pending','info');return;}
-    reqs.push({empEmail:emp.email,empName:emp.name,requestedAt:new Date().toISOString(),status:'pending'});
+    if(exist){window.showToast&&window.showToast('Request already pending with owner','info');return;}
+
+    // Show permission picker so employee can specify what they need
+    var allPerms = window.EMP_PERMISSIONS || {};
+    var currentPerms = window._employeePermissions || {};
+    var locked = Object.keys(allPerms).filter(function(k){ return !currentPerms[k]; });
+    var groups = {};
+    locked.forEach(function(k){
+        var g = allPerms[k].group;
+        if(!groups[g]) groups[g]=[];
+        groups[g].push({key:k, label:allPerms[k].label});
+    });
+
+    var modal = document.createElement('div');
+    modal.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+    modal.innerHTML='<div style="background:white;border-radius:20px;padding:24px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;">'
+        +'<h3 style="font-size:16px;font-weight:800;color:#1e293b;margin-bottom:4px">Request More Access</h3>'
+        +'<p style="font-size:12px;color:#64748b;margin-bottom:16px">Select which features you need. Owner will review your request.</p>'
+        +'<div id="perm-req-list">'
+        +Object.keys(groups).map(function(g){
+            return '<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:#6366f1;background:#eef2ff;padding:4px 8px;border-radius:6px;margin-bottom:6px">'+g+'</div>'
+            +groups[g].map(function(p){
+                return '<label style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer;font-size:13px;color:#1e293b;">'
+                +'<input type="checkbox" data-req-perm="'+p.key+'" style="width:16px;height:16px;accent-color:#3b82f6;flex-shrink:0">'
+                +p.label+'</label>';
+            }).join('')+'</div>';
+        }).join('')
+        +'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:16px;">'
+        +'<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="flex:1;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-weight:700;cursor:pointer;background:white;color:#64748b;">Cancel</button>'
+        +'<button onclick="window._submitPermRequest(this)" style="flex:1;padding:10px;background:#3b82f6;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;">Send Request</button>'
+        +'</div></div>';
+    document.body.appendChild(modal);
+};
+
+window._submitPermRequest=function(btn){
+    var modal=btn.closest('div[style*="fixed"]');
+    var checked=Array.from(modal.querySelectorAll('[data-req-perm]:checked')).map(function(el){return el.dataset.reqPerm;});
+    if(!checked.length){window.showToast&&window.showToast('Koi permission select nahi ki','warning');return;}
+    var emp=window._employeeData;var bizUid=window._employeeOwnerUid;
+    var allPerms=window.EMP_PERMISSIONS||{};
+    var permLabels=checked.map(function(k){return allPerms[k]?allPerms[k].label:k;});
+    var reqs=JSON.parse(localStorage.getItem('ayur_perm_requests_'+bizUid)||'[]');
+    reqs.push({empEmail:emp.email,empName:emp.name,requestedAt:new Date().toISOString(),status:'pending',permissions:checked,permLabels:permLabels});
     localStorage.setItem('ayur_perm_requests_'+bizUid,JSON.stringify(reqs));
-    window.showToast&&window.showToast('Permission request sent to owner! ✅');
+    modal.remove();
+    window.showToast&&window.showToast('Request sent! Owner will review it ✅');
 };
 
 window._editEmpId=null;window._currentEmpPermissions={};
@@ -7849,7 +8075,7 @@ window.renderEmployees=function(){
 window.openEmployeeDrawer=function(id){
     window._editEmpId=id||null;
     var emps=window.loadEmployees();
-    ['emp-name','emp-phone','emp-designation','emp-salary','emp-join-date','emp-address','emp-notes','emp-email','emp-password'].forEach(function(f){var el=document.getElementById(f);if(el)el.value='';});
+    ['emp-name','emp-phone','emp-designation','emp-salary-input','emp-join-date','emp-address','emp-notes','emp-email','emp-password'].forEach(function(f){var el=document.getElementById(f);if(el)el.value='';});
     var ae=document.getElementById('emp-active');if(ae)ae.checked=true;
     var de=document.getElementById('emp-dept');if(de)de.value='billing';
     window._currentEmpPermissions={};
@@ -7859,7 +8085,7 @@ window.openEmployeeDrawer=function(id){
         if(emp){
             if(te)te.textContent='Edit Employee';if(se)se.textContent='#'+id.slice(-6).toUpperCase();if(db)db.classList.remove('hidden');
             var sv=function(fid,v){var el=document.getElementById(fid);if(el)el.value=v||'';};
-            sv('emp-name',emp.name);sv('emp-phone',emp.phone);sv('emp-designation',emp.designation);sv('emp-salary',emp.salary);sv('emp-join-date',emp.joinDate);sv('emp-address',emp.address);sv('emp-notes',emp.notes);sv('emp-email',emp.email);sv('emp-password',emp.password);
+            sv('emp-name',emp.name);sv('emp-phone',emp.phone);sv('emp-designation',emp.designation);sv('emp-salary-input',emp.salary);sv('emp-join-date',emp.joinDate);sv('emp-address',emp.address);sv('emp-notes',emp.notes);sv('emp-email',emp.email);sv('emp-password',emp.password);
             if(de)de.value=emp.dept||'billing';if(ae)ae.checked=emp.active!==false;
             window._currentEmpPermissions=Object.assign({},emp.permissions||{});
         }
@@ -7906,7 +8132,7 @@ window.saveEmployee=function(){
     var emps=window.loadEmployees();
     var dup=emps.find(function(e){return e.email===email&&e.id!==window._editEmpId;});
     if(dup){window.showToast&&window.showToast('Email already in use','error');return;}
-    var emp={id:window._editEmpId||Date.now().toString(),name:name,phone:(document.getElementById('emp-phone')||{}).value||'',dept:(document.getElementById('emp-dept')||{}).value||'billing',designation:(document.getElementById('emp-designation')||{}).value||'',salary:Number((document.getElementById('emp-salary')||{}).value||0),joinDate:(document.getElementById('emp-join-date')||{}).value||'',address:(document.getElementById('emp-address')||{}).value||'',notes:(document.getElementById('emp-notes')||{}).value||'',email:email,password:(document.getElementById('emp-password')||{}).value||'',active:(document.getElementById('emp-active')||{checked:true}).checked,permissions:Object.assign({},window._currentEmpPermissions)};
+    var emp={id:window._editEmpId||Date.now().toString(),name:name,phone:(document.getElementById('emp-phone')||{}).value||'',dept:(document.getElementById('emp-dept')||{}).value||'billing',designation:(document.getElementById('emp-designation')||{}).value||'',salary:Number((document.getElementById('emp-salary-input')||{}).value||0),joinDate:(document.getElementById('emp-join-date')||{}).value||'',address:(document.getElementById('emp-address')||{}).value||'',notes:(document.getElementById('emp-notes')||{}).value||'',email:email,password:(document.getElementById('emp-password')||{}).value||'',active:(document.getElementById('emp-active')||{checked:true}).checked,permissions:Object.assign({},window._currentEmpPermissions)};
     if(!window._editEmpId){emps.push(emp);window.showToast&&window.showToast('Employee added! ✅');}
     else{emps=emps.map(function(e){return e.id===emp.id?Object.assign(e,emp):e;});window.showToast&&window.showToast('Updated! ✅');}
     window.saveEmployees(emps);window.closeEmployeeDrawer();window.renderEmployees();
@@ -8157,8 +8383,7 @@ window.clearActivityLog = function() {
 window.renderEmpRequests = function() {
     var uid = window.AppState && window.AppState.user && window.AppState.user.uid;
     if(!uid) return;
-    var pwReqs = [];
-    var pmReqs = [];
+    var pwReqs = [], pmReqs = [];
     try { pwReqs = JSON.parse(localStorage.getItem('ayur_pw_requests_'+uid) || '[]'); } catch(e) {}
     try { pmReqs = JSON.parse(localStorage.getItem('ayur_perm_requests_'+uid) || '[]'); } catch(e) {}
 
@@ -8166,48 +8391,51 @@ window.renderEmpRequests = function() {
     var pendPm = pmReqs.filter(function(r) { return r.status === 'pending'; });
     var totalPending = pendPw.length + pendPm.length;
 
-    // Update badge
     var badge = document.getElementById('emp-req-badge');
-    if(badge) {
-        badge.textContent = totalPending;
-        badge.classList.toggle('hidden', totalPending === 0);
-    }
+    if(badge) { badge.textContent = totalPending; badge.classList.toggle('hidden', totalPending === 0); }
 
     var listEl = document.getElementById('emp-requests-list');
     if(!listEl) return;
 
     if(!totalPending) {
-        listEl.innerHTML = '<div class="card p-8 text-center text-slate-400"><div class="text-4xl mb-3">✅</div><div class="font-semibold">No pending requests</div><div class="text-sm mt-1">All employee requests have been handled</div></div>';
+        listEl.innerHTML = '<div class="card p-8 text-center text-slate-400"><div class="text-4xl mb-3">✅</div><div class="font-semibold">No pending requests</div><div class="text-sm mt-1">All clear!</div></div>';
         return;
     }
 
     var html = '';
 
     if(pendPw.length) {
-        html += '<div class="font-bold text-slate-700 text-sm mb-2 flex items-center gap-2"><i data-lucide="key" class="w-4 h-4 text-amber-500"></i> Password Reset Requests</div>';
+        html += '<div class="font-bold text-slate-700 text-sm mb-2 flex items-center gap-2"><i data-lucide="key" class="w-4 h-4 text-amber-500"></i> Password Reset Requests ('+ pendPw.length +')</div>';
         html += pendPw.map(function(r) {
             return '<div class="card p-4 border-amber-200 bg-amber-50 mb-3">'
-                + '<div class="flex items-center justify-between mb-2">'
-                + '<div><div class="font-bold text-amber-900 text-sm">🔑 Password Reset</div>'
-                + '<div class="text-xs text-amber-700">From: ' + r.email + '</div>'
-                + '<div class="text-xs text-amber-600">' + new Date(r.requestedAt).toLocaleString('en-IN') + '</div></div>'
-                + '<button onclick="window.handlePwResetRequest(\'' + r.email + '\')" class="btn btn-primary btn-sm text-xs">Reset Now</button>'
+                + '<div class="flex items-start justify-between gap-2">'
+                + '<div class="flex-1"><div class="font-bold text-amber-900 text-sm">🔑 Password Reset</div>'
+                + '<div class="text-xs text-amber-700 mt-0.5">Employee: <strong>' + r.email + '</strong></div>'
+                + '<div class="text-xs text-amber-500 mt-0.5">' + new Date(r.requestedAt).toLocaleString('en-IN') + '</div></div>'
+                + '<button onclick="window.handlePwResetRequest(\'' + r.email + '\')" class="btn btn-primary btn-sm text-xs flex-shrink-0">Reset Now</button>'
                 + '</div></div>';
         }).join('');
     }
 
     if(pendPm.length) {
-        html += '<div class="font-bold text-slate-700 text-sm mb-2 mt-4 flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-blue-500"></i> Permission Expansion Requests</div>';
+        html += '<div class="font-bold text-slate-700 text-sm mb-2 mt-3 flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-blue-500"></i> Permission Requests ('+ pendPm.length +')</div>';
         html += pendPm.map(function(r) {
+            var permList = (r.permLabels || r.permissions || []).join(', ') || 'Not specified';
             return '<div class="card p-4 border-blue-200 bg-blue-50 mb-3">'
-                + '<div class="flex items-center justify-between mb-2">'
-                + '<div><div class="font-bold text-blue-900 text-sm">🔓 More Access Requested</div>'
-                + '<div class="text-xs text-blue-700">From: ' + r.empName + ' (' + r.empEmail + ')</div>'
-                + '<div class="text-xs text-blue-600">' + new Date(r.requestedAt).toLocaleString('en-IN') + '</div></div>'
-                + '<button onclick="window.openPermissionRequest(\'' + r.empEmail + '\')" class="btn btn-sm text-xs" style="background:#3b82f6;color:white">Review Roles</button>'
+                + '<div class="flex items-start justify-between gap-2 mb-2">'
+                + '<div class="flex-1">'
+                + '<div class="font-bold text-blue-900 text-sm">🔓 ' + r.empName + ' wants more access</div>'
+                + '<div class="text-xs text-blue-600 mt-0.5">📧 ' + r.empEmail + '</div>'
+                + '<div class="text-xs text-slate-500 mt-0.5">' + new Date(r.requestedAt).toLocaleString('en-IN') + '</div>'
+                + '</div></div>'
+                + '<div class="bg-white rounded-lg p-2.5 mb-3 border border-blue-100">'
+                + '<div class="text-[10px] font-bold text-blue-700 uppercase mb-1">Requested Permissions:</div>'
+                + '<div class="text-xs text-slate-700">' + permList + '</div>'
                 + '</div>'
-                + '<div class="flex gap-2 mt-2">'
-                + '<button onclick="window.dismissPermRequest(\'' + r.empEmail + '\')" class="btn btn-ghost btn-sm text-xs flex-1 justify-center text-red-500">Dismiss</button>'
+                + '<div class="flex gap-2">'
+                + '<button onclick="window.approvePermRequest(\'' + r.empEmail + '\')" class="btn btn-sm text-xs flex-1 justify-center" style="background:#059669;color:white"><i data-lucide="check" class="w-3 h-3"></i> Approve</button>'
+                + '<button onclick="window.openPermissionRequest(\'' + r.empEmail + '\')" class="btn btn-sm text-xs flex-1 justify-center" style="background:#3b82f6;color:white"><i data-lucide="shield" class="w-3 h-3"></i> Edit Roles</button>'
+                + '<button onclick="window.dismissPermRequest(\'' + r.empEmail + '\')" class="btn btn-ghost btn-sm text-xs flex-shrink-0 text-red-500">✕</button>'
                 + '</div></div>';
         }).join('');
     }
@@ -8216,11 +8444,35 @@ window.renderEmpRequests = function() {
     if(typeof lucide !== 'undefined') lucide.createIcons({node: listEl});
 };
 
+// Approve — grant all requested permissions directly
+window.approvePermRequest = function(empEmail) {
+    var uid = window.AppState && window.AppState.user && window.AppState.user.uid;
+    if(!uid) return;
+    var pmReqs = JSON.parse(localStorage.getItem('ayur_perm_requests_'+uid) || '[]');
+    var req = pmReqs.find(function(r){ return r.empEmail===empEmail && r.status==='pending'; });
+    if(!req) return;
+    var emps = window.loadEmployees ? window.loadEmployees() : [];
+    emps = emps.map(function(e){
+        if(e.email === empEmail && req.permissions) {
+            var updatedPerms = Object.assign({}, e.permissions||{});
+            (req.permissions||[]).forEach(function(k){ updatedPerms[k]=true; });
+            return Object.assign({}, e, {permissions: updatedPerms});
+        }
+        return e;
+    });
+    if(window.saveEmployees) window.saveEmployees(emps);
+    // Mark resolved
+    pmReqs = pmReqs.map(function(r){ return r.empEmail===empEmail&&r.status==='pending' ? Object.assign(r,{status:'approved'}) : r; });
+    localStorage.setItem('ayur_perm_requests_'+uid, JSON.stringify(pmReqs));
+    window.showToast && window.showToast('Permissions granted to ' + (req.empName||empEmail) + ' ✅');
+    window.renderEmpRequests();
+};
+
 window.dismissPermRequest = function(empEmail) {
     var uid = window.AppState && window.AppState.user && window.AppState.user.uid;
     if(!uid) return;
     var reqs = JSON.parse(localStorage.getItem('ayur_perm_requests_'+uid) || '[]');
-    reqs = reqs.map(function(r) { return r.empEmail === empEmail ? Object.assign(r, {status:'dismissed'}) : r; });
+    reqs = reqs.map(function(r) { return r.empEmail === empEmail && r.status==='pending' ? Object.assign(r, {status:'dismissed'}) : r; });
     localStorage.setItem('ayur_perm_requests_'+uid, JSON.stringify(reqs));
     window.renderEmpRequests();
     window.showToast && window.showToast('Request dismissed');
