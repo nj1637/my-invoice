@@ -292,7 +292,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     </div>
     <!-- Title -->
     <div class="text-center">
-      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">Dev Ayurveda</h1>
+      <h1 class="splash-title text-4xl font-black text-white tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">My business</h1>
       <p class="splash-sub text-emerald-400 text-[11px] font-bold uppercase tracking-[.25em] mt-2">Professional ERP System</p>
     </div>
     <!-- Progress bar -->
@@ -350,6 +350,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
             </div>
           </form>
           <p class="text-center text-slate-400 text-sm mt-4">New? <button onclick="showSignup()" class="text-emerald-400 font-semibold">Create account</button></p>
+        <p class="text-center mt-2"><button onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-slate-500 text-xs hover:text-slate-300 underline">Privacy Policy</button></p>
         </div>
 
         <!-- EMPLOYEE Login Form -->
@@ -399,7 +400,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
               <input type="file" accept="image/*" onchange="handleSignupAsset(event,'signature')" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/20 file:text-emerald-400">
             </div></div>
           <button type="submit" class="btn btn-primary w-full justify-center py-2.5">Create Account</button>
-          <p class="text-center text-slate-400 text-sm">Have account? <button type="button" onclick="showLogin()" class="text-emerald-400 font-semibold">Sign in</button></p>
+          <p class="text-center text-slate-400 text-xs mt-2">By creating an account you agree to our <button type="button" onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-emerald-400 font-semibold underline">Privacy Policy</button></p>
+          <p class="text-center text-slate-400 text-sm mt-1">Have account? <button type="button" onclick="showLogin()" class="text-emerald-400 font-semibold">Sign in</button></p>
         </form>
       </div>
     </div>
@@ -408,6 +410,174 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
 
 <!-- TOAST -->
 <div id="toast-zone" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none" id="toast-container"></div>
+
+<!-- ===== PRIVACY POLICY MODAL ===== -->
+<div id="privacy-modal" class="modal" onclick="if(event.target===this)document.getElementById('privacy-modal').classList.remove('open')">
+  <div class="modal-box max-w-lg w-full">
+    <div class="modal-head">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center"><i data-lucide="shield-check" class="w-4 h-4 text-blue-600"></i></div>
+        <div><div class="font-bold text-slate-800">Privacy Policy</div><div class="text-xs text-slate-400">My business ERP · Last updated March 2026</div></div>
+      </div>
+      <button onclick="document.getElementById('privacy-modal').classList.remove('open')" class="btn btn-icon btn-ghost"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="modal-body text-sm text-slate-600 leading-relaxed space-y-4">
+      <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-800 text-xs font-medium">
+        📋 By using My business ERP, you agree to this Privacy Policy.
+      </div>
+      <div><h4 class="font-bold text-slate-800 mb-1">1. Data We Collect</h4>
+      <p>We collect business data you enter including invoice details, client information, product inventory, expenses, and business settings. This data is stored securely in your Firebase account and locally on your device.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">2. How Your Data is Used</h4>
+      <p>Your data is used exclusively to provide ERP functionality — generating invoices, tracking inventory, managing clients, and producing business reports. We do not sell, share, or use your data for advertising purposes.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">3. Data Storage & Security</h4>
+      <p>All data is stored in your personal Firebase Firestore database. Authentication is handled by Firebase Auth (Google). Data is also cached locally (localStorage/IndexedDB) for offline access. Your data is isolated to your account UID and not accessible by other users.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">4. Employee Data</h4>
+      <p>When you add employees, their login credentials (email/password) are stored locally on the device. Employee activity logs are stored locally and are only visible to the account owner. Employees access the same business data as the owner, restricted by permissions you set.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">5. Third-Party Services</h4>
+      <p>This app uses Firebase (Google) for authentication and database storage, Tailwind CSS for styling, Chart.js for charts, and html2pdf.js for PDF generation. No data is shared with these services beyond what is necessary for their function.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">6. Cookies & Local Storage</h4>
+      <p>We use localStorage and IndexedDB to store your data locally for offline access and session persistence. No tracking cookies are used.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">7. Your Rights</h4>
+      <p>You may delete your account and all associated data at any time by contacting support or deleting your Firebase project. You have full ownership of your business data.</p></div>
+      <div><h4 class="font-bold text-slate-800 mb-1">8. Contact</h4>
+      <p>For privacy concerns, contact: <span class="font-semibold text-emerald-700">support@devayurveda.in</span></p></div>
+    </div>
+    <div class="modal-foot">
+      <button onclick="document.getElementById('privacy-modal').classList.remove('open')" class="btn btn-primary w-full justify-center">I Understand & Agree</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ABOUT / HELP MODAL ===== -->
+<div id="about-modal" class="modal" onclick="if(event.target===this)document.getElementById('about-modal').classList.remove('open')">
+  <div class="modal-box max-w-2xl w-full">
+    <div class="modal-head">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center"><i data-lucide="leaf" class="w-4 h-4 text-emerald-600"></i></div>
+        <div><div class="font-bold text-slate-800">About My business ERP</div><div class="text-xs text-emerald-600 font-semibold">Modular Pro · Version 10</div></div>
+      </div>
+      <button onclick="document.getElementById('about-modal').classList.remove('open')" class="btn btn-icon btn-ghost"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="modal-body space-y-4">
+      <!-- App Info -->
+      <div class="p-4 rounded-xl text-white text-sm" style="background:linear-gradient(135deg,#064e3b,#065f46)">
+        <div class="font-bold text-lg mb-1">🌿 My business ERP</div>
+        <div class="opacity-80 text-xs leading-relaxed">A complete business management system built for Ayurvedic clinics, wellness centers, and service businesses. Manage invoices, inventory, clients, employees and finances — all in one place.</div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span class="bg-white/20 px-2 py-0.5 rounded-lg text-[10px] font-bold">v10 Modular Pro</span>
+          <span class="bg-white/20 px-2 py-0.5 rounded-lg text-[10px] font-bold">Firebase Powered</span>
+          <span class="bg-white/20 px-2 py-0.5 rounded-lg text-[10px] font-bold">Offline Ready</span>
+        </div>
+      </div>
+
+      <!-- Tab switcher for About sections -->
+      <div class="flex gap-1 bg-slate-100 rounded-xl p-1" id="about-tabs">
+        <button onclick="window.switchAboutTab('features')" id="abtab-features" class="flex-1 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow">✨ Features</button>
+        <button onclick="window.switchAboutTab('guide')" id="abtab-guide" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500">📖 How to Use</button>
+        <button onclick="window.switchAboutTab('shortcuts')" id="abtab-shortcuts" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500">⌨️ Shortcuts</button>
+      </div>
+
+      <!-- FEATURES TAB -->
+      <div id="about-features" class="space-y-2">
+        <div class="grid grid-cols-2 gap-2">
+          <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl"><div class="text-sm font-bold text-emerald-800">📄 GST Invoicing</div><div class="text-xs text-emerald-600 mt-0.5">15+ templates, PDF, WhatsApp share, QR digital copy</div></div>
+          <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl"><div class="text-sm font-bold text-blue-800">📦 Inventory</div><div class="text-xs text-blue-600 mt-0.5">Stock tracking, low stock alerts, batch & expiry</div></div>
+          <div class="p-3 bg-purple-50 border border-purple-100 rounded-xl"><div class="text-sm font-bold text-purple-800">✨ Services</div><div class="text-xs text-purple-600 mt-0.5">Service catalog, SAC codes, quick service invoice</div></div>
+          <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl"><div class="text-sm font-bold text-amber-800">👥 Client CRM</div><div class="text-xs text-amber-600 mt-0.5">Ledger, clinical journal, payment reminders</div></div>
+          <div class="p-3 bg-red-50 border border-red-100 rounded-xl"><div class="text-sm font-bold text-red-800">💰 Expenses</div><div class="text-xs text-red-600 mt-0.5">Track all business expenses with categories</div></div>
+          <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl"><div class="text-sm font-bold text-indigo-800">📊 Dashboard</div><div class="text-xs text-indigo-600 mt-0.5">Health score, revenue, GST summary, forecasts</div></div>
+          <div class="p-3 bg-teal-50 border border-teal-100 rounded-xl"><div class="text-sm font-bold text-teal-800">👤 Employees</div><div class="text-xs text-teal-600 mt-0.5">Staff login, 70+ role permissions, activity log</div></div>
+          <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl"><div class="text-sm font-bold text-slate-800">📅 Daybook</div><div class="text-xs text-slate-600 mt-0.5">Daily cash & digital collections at a glance</div></div>
+          <div class="p-3 bg-orange-50 border border-orange-100 rounded-xl"><div class="text-sm font-bold text-orange-800">🔁 Recurring</div><div class="text-xs text-orange-600 mt-0.5">Auto-repeat invoices for monthly patients</div></div>
+          <div class="p-3 bg-pink-50 border border-pink-100 rounded-xl"><div class="text-sm font-bold text-pink-800">🤖 AI Report</div><div class="text-xs text-pink-600 mt-0.5">Weekly/monthly business reports with insights</div></div>
+        </div>
+      </div>
+
+      <!-- HOW TO USE TAB -->
+      <div id="about-guide" class="hidden space-y-3 text-sm">
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-xs font-black">1</span> Create Your First Invoice</h4>
+          <p class="text-slate-600 pl-8">Go to <strong>Invoice</strong> tab → Enter client name → Search & add products → Choose payment mode (UPI/Cash/Credit) → Click <strong>Preview & Finalize</strong> → Confirm to save.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-black">2</span> Add Products to Inventory</h4>
+          <p class="text-slate-600 pl-8">Go to <strong>Inventory</strong> → Click <strong>Add</strong> → Fill product name, category, HSN, rate, GST%, and opening stock → Save. Products appear in invoice search automatically.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xs font-black">3</span> Add Services</h4>
+          <p class="text-slate-600 pl-8">Go to <strong>Services</strong> → Click <strong>Add Service</strong> → Fill name, category, duration, rate → Save. In Invoice, click <strong>✨ Services</strong> toggle to search & add services.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-xs font-black">4</span> Add Employees</h4>
+          <p class="text-slate-600 pl-8">Go to <strong>Employees</strong> → Click <strong>Add Employee</strong> → Fill name, department → Go to <strong>Login tab</strong>, set email & password → Go to <strong>Role & Access tab</strong>, choose a template (Billing Staff / Receptionist) or set individual permissions → Save.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-red-100 text-red-700 rounded-full flex items-center justify-center text-xs font-black">5</span> Send Invoice via WhatsApp</h4>
+          <p class="text-slate-600 pl-8">After finalizing, click <strong>View</strong> on the invoice from Records → PDF Preview opens → Click green <strong>WhatsApp</strong> button → PDF attaches automatically on Android.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-teal-100 text-teal-700 rounded-full flex items-center justify-center text-xs font-black">6</span> Digital QR on Invoice</h4>
+          <p class="text-slate-600 pl-8">Every finalized invoice has a <strong>Scan for Digital Copy</strong> QR code. Client scans it with any phone camera → Opens the exact same invoice in browser → Can print or save as PDF.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-black">7</span> Business Settings</h4>
+          <p class="text-slate-600 pl-8">Go to <strong>Settings</strong> → Set business name, GSTIN, address, bank details, UPI ID, and upload logo & signature. These appear on all invoices automatically.</p>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center text-xs font-black">8</span> Recurring Invoices</h4>
+          <p class="text-slate-600 pl-8">Sidebar → <strong>Recurring</strong> → Set client, amount, frequency (weekly/monthly) → Due date pe "Generate" click karo → Invoice pre-filled hoga → Finalize karo.</p>
+        </div>
+      </div>
+
+      <!-- SHORTCUTS TAB -->
+      <div id="about-shortcuts" class="hidden">
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+I</kbd>
+            <span class="text-slate-600">New Invoice</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+D</kbd>
+            <span class="text-slate-600">Dashboard</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+R</kbd>
+            <span class="text-slate-600">Records</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+C</kbd>
+            <span class="text-slate-600">Clients</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+P</kbd>
+            <span class="text-slate-600">Add Product</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+S</kbd>
+            <span class="text-slate-600">Settings</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+F</kbd>
+            <span class="text-slate-600">Finalize Invoice</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
+            <kbd class="bg-white border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 shadow-sm">Alt+B</kbd>
+            <span class="text-slate-600">Barcode Scanner</span>
+          </div>
+          <div class="p-3 col-span-2 bg-amber-50 rounded-xl border border-amber-100 text-amber-700 text-[11px]">
+            💡 <strong>Mobile:</strong> Swipe right from left edge to open sidebar. Tap FAB (+) for quick new invoice.
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+        <div class="text-xs text-slate-400">Built with ❤️ for My business</div>
+        <button onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-xs text-blue-600 font-semibold hover:underline">Privacy Policy</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- APP -->
 <div id="app" class="w-full flex" style="display:none!important;height:100dvh;height:100vh;overflow:hidden">
@@ -447,20 +617,30 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
           <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">Dev Ayurveda</div>
+          <div class="text-white font-bold text-sm leading-tight" id="sidebar-biz-name">My business</div>
           <div class="text-emerald-500 text-[9px] font-bold uppercase tracking-widest">Modular Pro ERP</div>
         </div>
       </div>
       <div class="nav-section">Main</div>
       <nav id="desk-nav" class="flex flex-col gap-0.5 mt-1"></nav>
     </div>
-    <div class="mt-auto p-5 border-t border-white/5">
-      <div class="flex items-center gap-3">
+    <div class="mt-auto p-4 border-t border-white/5 flex-shrink-0">
+      <!-- User Info -->
+      <div class="flex items-center gap-3 mb-3">
         <div class="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0" id="user-avatar">U</div>
-        <div class="min-w-0">
+        <div class="min-w-0 flex-1">
           <div class="text-[10px] text-slate-500 uppercase tracking-wider">Signed in</div>
           <div class="text-xs font-semibold text-slate-300 truncate" id="user-email">...</div>
         </div>
+      </div>
+      <!-- Bottom Action Buttons -->
+      <div class="flex gap-2">
+        <button onclick="window.openAboutModal&&openAboutModal()" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+          <i data-lucide="info" class="w-3.5 h-3.5"></i> About
+        </button>
+        <button onclick="window._isEmployeeSession ? window.employeeLogout() : window.handleLogout()" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sign Out
+        </button>
       </div>
     </div>
   </aside>
@@ -988,7 +1168,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
     <div class="flex items-center gap-4">
       <div class="w-14 h-14 bg-white/10 border border-white/20 rounded-xl overflow-hidden flex items-center justify-center" id="settings-logo-preview"><i data-lucide="building-2" class="w-7 h-7 text-emerald-400"></i></div>
       <div class="flex-1 min-w-0">
-        <div class="text-white font-bold text-base" id="settings-biz-display">Dev Ayurveda</div>
+        <div class="text-white font-bold text-base" id="settings-biz-display">My business</div>
         <div class="text-emerald-400 text-xs font-medium" id="settings-email-display">...</div>
         <div class="flex gap-2 mt-1.5"><span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px]">Active</span><span class="badge bg-white/10 text-white/60 text-[10px]">Admin</span></div>
       </div>
@@ -2607,7 +2787,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, signOut, onAuthStateChanged, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, signOut, onAuthStateChanged, sendPasswordResetEmail, setPersistence, browserLocalPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, writeBatch, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const defaultAppId = 'dev-ayurveda-pro-auth';
@@ -2637,6 +2817,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window._auth = auth;
             window._sendPasswordResetEmail = (email) => sendPasswordResetEmail(auth, email);
             window._signInForPinReset = (email, pw) => signInWithEmailAndPassword(auth, email, pw);
+            window._signInAnonymously = () => signInAnonymously(auth);
         } catch(e) {
             console.error("Firebase Init Error:", e);
         }
@@ -2671,14 +2852,23 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const uid = window.AppState && window.AppState.user && window.AppState.user.uid;
                 if(!uid) return;
+                // Skip save if this is an employee session (don't overwrite owner's cache)
+                if(window.AppState.user && window.AppState.user.isEmployee) return;
                 const key = 'ayur_backup_' + uid;
-                localStorage.setItem(key, JSON.stringify({
+                const data = {
                     products: window.AppState.products || [],
                     clients: window.AppState.clients || [],
                     invoices: window.AppState.invoices || [],
                     expenses: window.AppState.expenses || [],
                     settings: window.AppState.settings || {},
                     savedAt: new Date().toISOString()
+                };
+                localStorage.setItem(key, JSON.stringify(data));
+                // Also save settings separately for employee login screen
+                localStorage.setItem('ayur_settings_cache_'+uid, JSON.stringify({
+                    businessName: (window.AppState.settings||{}).businessName || '',
+                    gstin: (window.AppState.settings||{}).gstin || '',
+                    address: (window.AppState.settings||{}).address || ''
                 }));
             } catch(e) { console.warn('LocalStorage save failed:', e); }
         };
@@ -2697,7 +2887,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const products = window.AppState.products || [];
                 const expenses = window.AppState.expenses || [];
                 const s = window.AppState.settings || {};
-                const bizName = s.businessName || 'Dev Ayurveda';
+                const bizName = s.businessName || 'My business';
                 const now = new Date().toLocaleString('en-IN');
 
                 // Helper: add sheet with header styling info
@@ -4450,7 +4640,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.populateSettingsUI = function() {
             const s = window.AppState.settings;
             // Dynamic app name update — show user's business name everywhere
-            const bizName = s.businessName || 'Dev Ayurveda';
+            const bizName = s.businessName || 'My business';
             const sidebarName = document.getElementById('sidebar-biz-name'); if(sidebarName) sidebarName.textContent = bizName;
             const topbarTitle = document.getElementById('topbar-biz-name'); if(topbarTitle) topbarTitle.textContent = bizName;
             setVal('set-biz-name', s.businessName || ''); setVal('set-biz-gstin', s.gstin || ''); setVal('set-biz-address', s.address || ''); 
@@ -5996,7 +6186,7 @@ window.sendReminderWA = function(clientId) {
     var unpaidInvs = (window.AppState.invoices||[]).filter(function(i){ return i.client&&i.client.name===client.name && i.paymentStatus!=='paid' && i.status==='final'; });
     if(unpaidInvs.length===0) { window.showToast('No pending dues for this client','info'); return; }
     var total = unpaidInvs.reduce(function(s,i){ return s+Number(i.grandTotal||0); },0);
-    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
+    var bizName = (window.AppState.settings&&window.AppState.settings.businessName)||'My business';
     var ids = unpaidInvs.map(function(i){ return i.id; }).join(', ');
     var fmt = function(n){ return '₹'+Number(n).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+bizName+'*\n\nDear '+client.name+',\n\nThis is a friendly reminder regarding your outstanding payment:\n\n📋 Invoice(s): '+ids+'\n💰 Total Due: *'+fmt(total)+'*\n\nKindly arrange payment at your earliest convenience.\n\nThank you for your trust! 🙏';
@@ -6087,7 +6277,7 @@ window.updateBirthdayReminders = function() {
         list.innerHTML = matches.map(function(c){
             var num = (c.mobile||'').replace(/\D/g,'');
             var waNum = num.length===10?'91'+num:num;
-            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda');
+            var msg = '🎂 Happy Birthday '+c.name+'! Wishing you great health and happiness. 🌿\n\n— '+((window.AppState.settings&&window.AppState.settings.businessName)||'My business');
             return '<div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-pink-100 shadow-sm"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold text-sm">'+c.name.charAt(0)+'</div><div><div class="text-sm font-bold text-slate-800">'+c.name+'</div><div class="text-xs text-pink-500">🎂 Birthday Today!</div></div></div><a href="https://wa.me/'+waNum+'?text='+encodeURIComponent(msg)+'" target="_blank" class="btn btn-sm text-xs" style="background:#25D366;color:white;border:none">Wish 🎉</a></div>';
         }).join('');
     } else {
@@ -6532,7 +6722,7 @@ window.generateAIReport = function() {
   if(period.weekRange) exps = exps.filter(function(e){ var d=parseInt(e.date.split('-')[2]); return d>=period.weekRange[0] && d<=period.weekRange[1]; });
   var products = (window.AppState&&window.AppState.products)||[];
   var s = (window.AppState&&window.AppState.settings)||{};
-  var bizName = s.businessName || 'Dev Ayurveda';
+  var bizName = s.businessName || 'My business';
 
   var rev = invs.reduce(function(sum,i){ return sum+Number(i.grandTotal||0); },0);
   var exp = exps.reduce(function(sum,e){ return sum+Number(e.amount||0); },0);
@@ -6613,7 +6803,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </head>
 <body>
 <div class="hero">
-  <div class="badge">🌿 Dev Ayurveda ERP · AI Report</div>
+  <div class="badge">🌿 My business ERP · AI Report</div>
   <h1>${bizName}</h1>
   <p>${period.type === 'weekly' ? 'Weekly' : 'Monthly'} Business Intelligence Report</p>
   <p style="color:#475569;font-size:.78rem;margin-top:8px">Generated: ${now}</p>
@@ -6711,7 +6901,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b}
 </div>
 
 <div class="footer">
-  <p>Generated by <strong>${bizName}</strong> ERP · Dev Ayurveda Pro · ${now}</p>
+  <p>Generated by <strong>${bizName}</strong> ERP · My business Pro · ${now}</p>
   <p style="margin-top:4px;color:#cbd5e1">This report is confidential and intended for internal business use only.</p>
 </div>
 
@@ -6840,7 +7030,7 @@ window.autoSendWAInvoice = async function() {
     var invs = (window.AppState&&window.AppState.invoices)||[];
     var latest = invs.filter(function(i){ return i.status==='final'; }).sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); })[0];
     if(!latest) return;
-    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'Dev Ayurveda';
+    var biz = (window.AppState.settings&&window.AppState.settings.businessName)||'My business';
     var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
     var msg = '🌿 *'+biz+'*\n\nDear '+latest.client.name+',\n\nYour invoice is ready:\n\n📋 *'+latest.id+'*\n📅 '+latest.date+'\n💰 *'+fmt(latest.grandTotal)+'*\n\n'+(latest.paymentStatus==='paid'?'✅ Paid':'⏳ Payment Pending')+'\n\nThank you! 🙏';
     var mobile = (latest.client&&latest.client.mobile||'').replace(/\D/g,'');
@@ -7178,10 +7368,11 @@ window._b64d = function(s) {
     catch(e) { return ''; }
 };
 
+// Index-17 mein ise replace karein
 window.generateDigitalInvoiceQR = function(inv) {
     try {
         var s = (window.AppState && window.AppState.settings) || {};
-        // Compact object taaki QR code bahut complex na bane
+        // Data ko chhota (compact) banana taaki QR simple rahe
         var compact = {
             id: inv.id,
             date: inv.date,
@@ -7197,10 +7388,10 @@ window.generateDigitalInvoiceQR = function(inv) {
             mode: inv.paymentMode
         };
 
-        // Data ko Base64 mein convert karna
+        // Saare data ko Base64 string mein badalna (Global access ke liye)
         var encodedData = btoa(encodeURIComponent(JSON.stringify(compact)));
 
-        // URL banana: same page + 'd' parameter
+        // URL structure: current link + ?d=DATA
         var baseUrl = window.location.href.split('?')[0].split('#')[0];
         var viewUrl = baseUrl + '?d=' + encodedData;
 
@@ -7214,178 +7405,82 @@ window.generateDigitalInvoiceQR = function(inv) {
 // ── INVOICE VIEWER — runs AFTER full app initializes ─────────────────────────
 // Strategy: Let the full page load normally (Tailwind, Firebase module, everything).
 // Then detect ?inv= param and overlay the invoice on top of the app.
+// Index-17 ke aakhiri script block mein ise replace karein
 (function() {
     var params = new URLSearchParams(window.location.search);
-    var invParam = params.get('inv');
-    if(!invParam) return; // Normal app load — do nothing
+    var encodedData = params.get('d');
 
-    var pack = null;
-    try { pack = JSON.parse(window._b64d(invParam)); } catch(e) {}
+    if(!encodedData) return;
 
-    // Wait for generateInvoiceHTML to be available (loaded by Firebase module script)
-    var attempts = 0;
-    var waitAndRender = setInterval(function() {
-        attempts++;
-        // Timeout after 15 seconds — show fallback
-        if(attempts > 150) {
-            clearInterval(waitAndRender);
-            if(pack) showQRFallback(pack);
-            else showQRError();
-            return;
-        }
-        // All 4 functions must be available
-        if(!window.generateInvoiceHTML) return;
-        if(!window.formatCurrency) return;
-        if(!window.isFeatureEnabled) return;
-        if(!window.generateLocalQR) return;
-        clearInterval(waitAndRender);
-        renderQRInvoice(pack);
-    }, 100);
-
-    function renderQRInvoice(pack) {
-        if(!pack) { showQRError(); return; }
-
-        // Reconstruct invoice object (exact shape generateInvoiceHTML expects)
-        var inv = {
-            id:pack.id, date:pack.date, docType:pack.docType||'Tax Invoice',
-            currency:pack.currency||'INR', paymentMode:pack.paymentMode,
-            paymentStatus:pack.paymentStatus, notes:pack.notes||'',
-            discountAmountCalculated:pack.discount||0,
-            grandTotal:pack.grandTotal, totalTax:pack.totalTax, subtotal:pack.subtotal,
-            client:pack.client,
-            items:pack.items||[],
-            status:'final'
-        };
-
-        // Build full settings object for rendering
-        var qrSettings = Object.assign({}, pack.settings||{}, {
-            // Ensure features object exists so isFeatureEnabled works
-            features: {
-                hsn: !!(pack.items && pack.items[0] && pack.items[0].hsn),
-                batch: !!(pack.items && pack.items.some(function(x){ return x.batch; })),
-                stamp: false
+    // Jab koi QR scan karega, ye block execute hoga
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var data = null;
+            try {
+                // Base64 data ko vapas readable format mein badalna
+                data = JSON.parse(decodeURIComponent(atob(encodedData)));
+            } catch(e) { 
+                console.error("URL Decode Error");
+                document.body.innerHTML = '<div style="text-align:center;padding:50px;font-family:sans-serif;"><h2>Invalid Invoice Link</h2><p>Data corrupt ya incomplete hai.</p></div>';
+                return;
             }
-        });
 
-        // Fully set up AppState for template rendering
-        if(!window.AppState) window.AppState = {};
-        var originalSettings = window.AppState.settings;
-        window.AppState.settings = qrSettings;
+            var fmt = function(n){ return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
+            
+            // Items ki table rows banana
+            var itemsHTML = (data.items||[]).map(function(it, i) {
+                return '<tr style="border-bottom:1px solid #f1f5f9">'
+                    + '<td style="padding:12px 8px;color:#64748b">'+(i+1)+'</td>'
+                    + '<td style="padding:12px 8px;font-weight:600;color:#1e293b">'+(it.n||'')+'</td>'
+                    + '<td style="padding:12px 8px;text-align:center">'+(it.q||1)+'</td>'
+                    + '<td style="padding:12px 8px;text-align:right">'+fmt(it.r||0)+'</td>'
+                    + '<td style="padding:12px 8px;text-align:right;font-weight:700;color:#059669">'+fmt(Number(it.q||1)*Number(it.r||0))+'</td>'
+                    + '</tr>';
+            }).join('');
 
-        // Disable QR generation inside viewer (prevent recursion)
-        var origGenQR = window.generateDigitalInvoiceQR;
-        window.generateDigitalInvoiceQR = function(){ return ''; };
+            var statusColor = data.status === 'paid' ? '#059669' : '#f59e0b';
+            var statusText = data.status === 'paid' ? '✅ PAID' : '⏳ PAYMENT PENDING';
 
-        var invoiceHTML = '';
-        try {
-            invoiceHTML = window.generateInvoiceHTML(inv);
-        } catch(e) {
-            console.error('Invoice render error:', e);
-            window.AppState.settings = originalSettings;
-            window.generateDigitalInvoiceQR = origGenQR;
-            showQRFallback(pack);
-            return;
-        }
+            // Poori screen par sirf Invoice dikhana
+            document.body.innerHTML = '';
+            document.title = "Invoice #" + data.id + " - " + data.biz;
 
-        // Restore original settings
-        window.AppState.settings = originalSettings;
-        window.generateDigitalInvoiceQR = origGenQR;
-
-        if(!invoiceHTML) { showQRFallback(pack); return; }
-
-        // Build full-screen overlay
-        var overlay = document.createElement('div');
-        overlay.id = 'qr-invoice-overlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#e2e8f0;overflow-y:auto;-webkit-overflow-scrolling:touch;';
-
-        // Action bar at top
-        var topBar = document.createElement('div');
-        topBar.style.cssText = 'position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e2e8f0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
-        topBar.innerHTML = '<div style="font-size:13px;font-weight:700;color:#1e293b;">📄 Digital Invoice</div>'
-            +'<div style="display:flex;gap:8px;">'
-            +'<button onclick="window.print()" style="padding:9px 16px;background:#059669;color:white;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">🖨️ Print / PDF</button>'
-            +(navigator.share?'<button onclick="navigator.share({title:\'Invoice #'+pack.id+'\',url:window.location.href})" style="padding:9px 14px;background:#3b82f6;color:white;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">📤 Share</button>':'')
-            +'</div>';
-
-        var invoiceWrap = document.createElement('div');
-        invoiceWrap.style.cssText = 'max-width:210mm;margin:12px auto;padding:0 8px 40px;';
-        invoiceWrap.innerHTML = invoiceHTML;
-
-        overlay.appendChild(topBar);
-        overlay.appendChild(invoiceWrap);
-        document.body.appendChild(overlay);
-
-        // Add print-specific styles
-        var printStyle = document.createElement('style');
-        printStyle.id = 'qr-print-style';
-        printStyle.textContent = '@media print{'
-            +'#qr-invoice-overlay{position:static!important;overflow:visible!important;background:white!important}'
-            +'#qr-invoice-overlay>div:first-child{display:none!important}'
-            +'body>*:not(#qr-invoice-overlay){display:none!important}'
-            +'.inv-id-tracker{page-break-inside:avoid}'
-            +'-webkit-print-color-adjust:exact;print-color-adjust:exact'
-            +'}';
-        document.head.appendChild(printStyle);
-
-        // Trigger lucide icon refresh for template icons
-        setTimeout(function(){ if(window.lucide) window.lucide.createIcons({node:overlay}); else if(typeof lucide!=='undefined') lucide.createIcons({node:overlay}); }, 200);
-
-        document.title = (pack.settings&&pack.settings.businessName||'Invoice') + ' — #' + pack.id;
-    }
-
-    function showQRError() {
-        document.body.innerHTML = '<div style="font-family:sans-serif;max-width:420px;margin:80px auto;padding:24px;text-align:center">'
-            +'<div style="font-size:56px">❌</div>'
-            +'<h2 style="margin:16px 0 8px;color:#1e293b">Invalid QR Code</h2>'
-            +'<p style="color:#64748b;font-size:14px">This QR is corrupted. Ask for a fresh invoice.</p>'
-            +'<a href="'+window.location.href.split('?')[0]+'" style="display:inline-block;margin-top:20px;padding:12px 28px;background:#059669;color:white;border-radius:12px;text-decoration:none;font-weight:700">Open App</a>'
-            +'</div>';
-    }
-
-    function showQRFallback(pack) {
-        // Clean fallback when template rendering fails
-        var s = pack.settings||{};
-        var fmt = function(n){ return '\u20b9'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2}); };
-        var rows = (pack.items||[]).map(function(it,i){
-            return '<tr><td style="padding:10px 8px;color:#94a3b8;border-bottom:1px solid #f1f5f9">'+(i+1)+'</td>'
-                +'<td style="padding:10px 8px;font-weight:600;border-bottom:1px solid #f1f5f9">'+it.name+(it.hsn?'<br><span style="font-size:10px;color:#94a3b8">HSN:'+it.hsn+'</span>':'')+'</td>'
-                +'<td style="padding:10px 8px;text-align:center;border-bottom:1px solid #f1f5f9">'+it.qty+'</td>'
-                +'<td style="padding:10px 8px;text-align:right;border-bottom:1px solid #f1f5f9">'+fmt(it.rate)+'</td>'
-                +'<td style="padding:10px 8px;text-align:right;font-weight:700;color:#059669;border-bottom:1px solid #f1f5f9">'+fmt(it.qty*it.rate)+'</td>'
-                +'</tr>';
-        }).join('');
-        var overlay = document.createElement('div');
-        overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#e2e8f0;overflow-y:auto;font-family:"Segoe UI",sans-serif';
-        overlay.innerHTML = '<div style="max-width:520px;margin:0 auto;padding:16px 14px 60px">'
-            +'<div style="background:linear-gradient(135deg,#064e3b,#065f46);color:white;padding:20px;border-radius:16px;margin-bottom:14px">'
-            +'<div style="font-size:20px;font-weight:800">'+(s.businessName||'')+'</div>'
-            +'<div style="opacity:.7;font-size:11px;margin-top:3px">'+(s.address||'')+(s.phone?' \u00b7 '+s.phone:'')+'</div>'
-            +(s.gstin?'<div style="opacity:.6;font-size:10px;margin-top:2px;font-family:monospace">GSTIN: '+s.gstin+'</div>':'')+'</div>'
-            +'<div style="background:white;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.08)">'
-            +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
-            +'<div><div style="font-size:22px;font-weight:900;color:#059669">#'+pack.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:2px">'+pack.date+'</div></div>'
-            +'<div style="background:'+(pack.paymentStatus==='paid'?'#f0fdf4':'#fffbeb')+';color:'+(pack.paymentStatus==='paid'?'#059669':'#d97706')+';padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700">'+(pack.paymentStatus==='paid'?'✅ PAID':'⏳ Pending')+'</div></div>'
-            +'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px">'
-            +'<div style="font-weight:700;color:#065f46">'+(pack.client&&pack.client.name||'')+'</div>'
-            +(pack.client&&pack.client.mobile?'<div style="font-size:12px;color:#059669;margin-top:2px">'+pack.client.mobile+'</div>':'')
-            +(pack.client&&pack.client.address?'<div style="font-size:11px;color:#64748b;margin-top:2px">'+pack.client.address+'</div>':'')
-            +'</div></div>'
-            +'<div style="background:white;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.08)">'
-            +'<table style="width:100%;border-collapse:collapse;font-size:13px">'
-            +'<thead><tr style="background:#0f172a;color:white"><th style="padding:10px 8px;text-align:left;font-size:10px;font-weight:700">#</th><th style="padding:10px 8px;text-align:left;font-size:10px;font-weight:700">ITEM</th><th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700">QTY</th><th style="padding:10px 8px;text-align:right;font-size:10px;font-weight:700">RATE</th><th style="padding:10px 8px;text-align:right;font-size:10px;font-weight:700">AMT</th></tr></thead>'
-            +'<tbody>'+rows+'</tbody></table>'
-            +'<div style="padding:14px 16px;border-top:2px solid #f1f5f9">'
-            +(pack.totalTax>0?'<div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:6px"><span>GST / Tax</span><span>'+fmt(pack.totalTax)+'</span></div>':'')
-            +(pack.discount>0?'<div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:6px"><span>Discount</span><span>-'+fmt(pack.discount)+'</span></div>':'')
-            +'<div style="display:flex;justify-content:space-between;font-size:18px;font-weight:900"><span style="color:#1e293b">Grand Total</span><span style="color:#059669">'+fmt(pack.grandTotal)+'</span></div></div></div>'
-            +(s.bankName?'<div style="background:white;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:12px;color:#64748b"><div style="font-weight:700;color:#1e293b;margin-bottom:6px">Bank Details</div><div>'+s.bankName+'</div><div>A/C: '+s.bankAcc+'</div><div>IFSC: '+s.bankIfsc+'</div></div>':'')
-            +(pack.notes?'<div style="background:white;border-radius:12px;padding:14px;margin-bottom:12px;font-size:12px;color:#64748b"><div style="font-weight:700;color:#1e293b;margin-bottom:4px">Notes</div>'+pack.notes+'</div>':'')
-            +'<button onclick="window.print()" style="width:100%;padding:15px;background:#059669;color:white;border:none;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(5,150,105,.35);">🖨️ Print / Save PDF</button>'
-            +'</div>';
-        document.body.appendChild(overlay);
-        document.title=(s.businessName||'Invoice')+' — #'+pack.id;
-    }
+            var container = document.createElement('div');
+            container.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;max-width:550px;margin:0 auto;padding:16px;background:#f8fafc;min-height:100vh;';
+            container.innerHTML = [
+                '<div style="background:linear-gradient(135deg,#064e3b,#065f46);color:white;padding:25px;border-radius:20px;margin-bottom:20px;box-shadow:0 10px 20px rgba(5,150,105,0.2)">',
+                    '<div style="font-size:22px;font-weight:800">'+data.biz+'</div>',
+                    '<div style="opacity:.8;font-size:12px;margin-top:5px">'+(data.addr||'')+'</div>',
+                    data.phone ? '<div style="opacity:.8;font-size:12px">📞 '+data.phone+'</div>' : '',
+                '</div>',
+                '<div style="background:white;border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,0.05)">',
+                    '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:15px">',
+                        '<div><div style="font-size:24px;font-weight:900;color:#1e293b">#'+data.id+'</div>',
+                        '<div style="font-size:13px;color:#94a3b8;margin-top:2px">📅 Invoice Date: '+data.date+'</div></div>',
+                        '<span style="background:'+statusColor+'15;color:'+statusColor+';padding:8px 16px;border-radius:25px;font-size:12px;font-weight:800;letter-spacing:0.5px">'+statusText+'</span>',
+                    '</div>',
+                    '<div style="background:#f0fdf4;border:1px solid #d1fae5;border-radius:12px;padding:15px">',
+                        '<div style="font-size:11px;color:#059669;text-transform:uppercase;font-weight:800;margin-bottom:2px">Billed To</div>',
+                        '<div style="font-size:16px;font-weight:700;color:#064e3b">'+(data.client&&data.client.name||'Customer')+'</div>',
+                    '</div>',
+                '</div>',
+                '<div style="background:white;border-radius:20px;overflow:hidden;margin-bottom:15px;box-shadow:0 4px 15px rgba(0,0,0,0.05)">',
+                    '<table style="width:100%;border-collapse:collapse;font-size:14px">',
+                        '<thead><tr style="background:#0f172a;color:white"><th style="padding:12px 8px;text-align:left">#</th><th style="padding:12px 8px;text-align:left">Item</th><th style="padding:12px 8px">Qty</th><th style="padding:12px 8px">Rate</th><th style="padding:12px 8px;text-align:right">Total</th></tr></thead>',
+                        '<tbody>'+itemsHTML+'</tbody>',
+                        '<tfoot><tr style="background:#f8fafc;font-weight:800"><td colspan="4" style="padding:15px 8px;text-align:right;color:#64748b;font-size:15px">Grand Total</td><td style="padding:15px 8px;text-align:right;color:#059669;font-size:20px">'+fmt(data.total)+'</td></tr></tfoot>',
+                    '</table>',
+                '</div>',
+                '<div style="text-align:center;margin-top:25px;padding-bottom:30px">',
+                    '<button onclick="window.print()" style="width:100%;padding:15px;background:#059669;color:white;border:none;border-radius:15px;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 5px 15px rgba(5,150,105,0.3)">🖨️ Print / Save PDF</button>',
+                    '<p style="color:#94a3b8;font-size:11px;margin-top:15px">Verified Digital Invoice - Powered by '+data.biz+'</p>',
+                '</div>'
+            ].join('');
+            document.body.appendChild(container);
+        }, 150);
+    });
 })();
+
 
 // ── PWA OFFLINE MODE — Service Worker ────────────────────────
 (function(){
@@ -7852,53 +7947,87 @@ window._startEmployeeSession = function(emp, bizUid) {
     window._employeeOwnerUid = bizUid;
     window._employeePermissions = emp.permissions || {};
 
-    var cfg = JSON.parse(localStorage.getItem('ayur_settings_cache_'+bizUid)||'{}');
-    if(!window.AppState) window.AppState = {};
+    if(!window.AppState) window.AppState = window.getInitialState ? window.getInitialState() : {};
 
-    // Set user to owner's UID so Firestore reads owner's data
+    // ── STEP 1: Load owner data from localStorage cache ───────
+    var backup = null;
+    try {
+        var raw = localStorage.getItem('ayur_backup_' + bizUid);
+        if(raw) backup = JSON.parse(raw);
+    } catch(e) {}
+
+    if(backup) {
+        window.AppState.products  = backup.products  || [];
+        window.AppState.clients   = backup.clients   || [];
+        window.AppState.invoices  = backup.invoices  || [];
+        window.AppState.expenses  = backup.expenses  || [];
+        window.AppState.settings  = backup.settings  || {};
+        try {
+            var svcs = localStorage.getItem('ayur_services_' + bizUid);
+            if(svcs) window.AppState.services = JSON.parse(svcs);
+        } catch(e2) {}
+    } else {
+        var cfg = {};
+        try { cfg = JSON.parse(localStorage.getItem('ayur_settings_cache_'+bizUid)||'{}'); } catch(e){}
+        window.AppState.settings = cfg;
+    }
+
+    // ── STEP 2: Set AppState user to owner UID ────────────────
     window.AppState.user = { uid: bizUid, email: emp.email, isEmployee: true };
-    window.AppState.settings = Object.assign(window.AppState.settings||{}, cfg);
     window.AppState._isEmployee = true;
     window.AppState._empData = emp;
 
+    // ── STEP 3: Try live Firestore ─────────────────────────────
+    // Check if owner's Firebase Auth session is still active (IndexedDB persisted)
+    var tryLiveData = function() {
+        if(!window.setupFirestoreListeners) return;
+        // Check auth.currentUser from module scope
+        var authUser = window._auth && window._auth.currentUser;
+        if(authUser && authUser.uid === bizUid) {
+            // Owner's session still active — use it directly
+            window.AppState.user = { uid: bizUid, email: authUser.email, isEmployee: true };
+            try { window.setupFirestoreListeners(); } catch(e) { console.warn('FS listener err:', e); }
+        } else {
+            // Try anonymous auth as fallback
+            if(window._signInAnonymously) {
+                window._signInAnonymously().then(function(cred) {
+                    // Anonymous user authenticated — but Firestore path uses bizUid
+                    // This works if Firestore rules allow: allow read, write: if request.auth != null
+                    window.AppState.user = { uid: bizUid, email: emp.email, isEmployee: true };
+                    try { window.setupFirestoreListeners(); } catch(e) { console.warn('FS anon err:', e); }
+                }).catch(function(e) {
+                    // Anonymous auth disabled — data from cache only
+                    window.showToast && window.showToast('Working in offline mode — live sync unavailable', 'info');
+                });
+            }
+        }
+    };
+
+    // Try immediately, then retry after short delay (auth may not be ready)
+    tryLiveData();
+    setTimeout(tryLiveData, 1500);
+
+    // ── STEP 4: UI setup ──────────────────────────────────────
     var authC = document.getElementById('auth-wrap'); if(authC) authC.style.display='none';
     var appC  = document.getElementById('app');       if(appC)  appC.style.display='flex';
 
-    // Update sidebar display immediately
+    var s = window.AppState.settings || {};
     var snEl = document.getElementById('sidebar-biz-name');
-    if(snEl) snEl.textContent = cfg.businessName || 'My Business';
-    var emailEl = document.getElementById('user-email');
-    if(emailEl) emailEl.textContent = emp.name + ' (Staff)';
+    if(snEl) snEl.textContent = s.businessName || 'My Business';
+    try { setText('user-id-display', emp.name + ' (Staff)'); } catch(e){}
+    try { setText('user-email', emp.email); } catch(e){}
     var avEl = document.getElementById('user-avatar');
     if(avEl) avEl.textContent = emp.name.charAt(0).toUpperCase();
-    // Also update sidebar header
-    setText && setText('user-id-display', emp.name);
-
-    // Load owner's Firestore data using owner UID
-    if(window.setupFirestoreListeners) {
-        try {
-            window.setupFirestoreListeners();
-        } catch(e) {
-            console.error('Employee Firestore setup error:', e);
-        }
-    } else {
-        // setupFirestoreListeners not yet exposed — wait for it
-        var waitFS = setInterval(function(){
-            if(window.setupFirestoreListeners) {
-                clearInterval(waitFS);
-                try { window.setupFirestoreListeners(); } catch(e) {}
-            }
-        }, 200);
-    }
 
     if(window.renderNavigation) window.renderNavigation();
-
-    // Apply restrictions BEFORE tab switch (no flicker)
     window.applyEmployeeRestrictions();
 
+    // ── STEP 5: Log activity ──────────────────────────────────
     setTimeout(function(){
+        window.logEmployeeActivity && window.logEmployeeActivity('Login', 'Employee logged in from ' + (navigator.userAgent.includes('Mobile')?'Mobile':'Desktop'));
         if(window.switchTab) window.switchTab('dashboard');
-        window.showToast && window.showToast('Welcome '+emp.name+'! 👋', 'info');
+        var dataMsg = backup ? 'Welcome ' + emp.name + '! 👋 Data loaded.' : 'Welcome ' + emp.name + '! ⚠️ No cache found — ask owner to sync.';
+        window.showToast && window.showToast(dataMsg, backup ? 'info' : 'warning');
     }, 300);
 };
 
@@ -8550,4 +8679,47 @@ window.handleEmployeeLogin = async function(e) {
         window.logEmployeeActivity('Login', 'Employee logged in');
     }, 1000);
 };
+</script>
+
+<script>
+// ── ABOUT MODAL ───────────────────────────────────────────────
+window.openAboutModal = function() {
+    document.getElementById('about-modal').classList.add('open');
+    window.switchAboutTab('features');
+    if(typeof lucide !== 'undefined') lucide.createIcons({node: document.getElementById('about-modal')});
+};
+
+window.switchAboutTab = function(tab) {
+    ['features','guide','shortcuts'].forEach(function(t) {
+        var content = document.getElementById('about-'+t);
+        var btn = document.getElementById('abtab-'+t);
+        if(content) content.classList.toggle('hidden', t !== tab);
+        if(btn) {
+            if(t === tab) {
+                btn.className = 'flex-1 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow';
+            } else {
+                btn.className = 'flex-1 py-2 rounded-lg text-xs font-bold text-slate-500';
+            }
+        }
+    });
+};
+
+// Show Privacy Policy automatically on first visit
+(function() {
+    if(!localStorage.getItem('ayur_privacy_accepted')) {
+        setTimeout(function() {
+            var authWrap = document.getElementById('auth-wrap');
+            if(authWrap && authWrap.style.display !== 'none') {
+                document.getElementById('privacy-modal').classList.add('open');
+            }
+        }, 1500);
+    }
+    // Mark as accepted when user clicks "I Understand"
+    var privBtn = document.querySelector('#privacy-modal .modal-foot .btn-primary');
+    if(privBtn) {
+        privBtn.addEventListener('click', function() {
+            localStorage.setItem('ayur_privacy_accepted', '1');
+        });
+    }
+})();
 </script>
