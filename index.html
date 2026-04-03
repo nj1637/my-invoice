@@ -309,18 +309,24 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
 
 <!-- AUTH -->
 <div id="auth-wrap" class="fixed inset-0 z-[200] overflow-y-auto" style="display:none">
-  <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-sm">
-      <div class="text-center mb-5">
-        <div class="w-14 h-14 bg-emerald-500/20 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <i data-lucide="leaf" class="w-7 h-7 text-emerald-400"></i>
-        </div>
-        <h2 class="text-2xl font-bold text-white" id="auth-title">Welcome Back</h2>
-        <p class="text-slate-400 text-sm mt-1" id="auth-subtitle">Sign in to your ERP</p>
-      </div>
+  <!-- Animated background -->
+  <div class="fixed inset-0 -z-10" style="background:linear-gradient(135deg,#0d1117 0%,#064e3b 50%,#065f46 100%)">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(16,185,129,.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(5,150,105,.1) 0%,transparent 50%)"></div>
+  </div>
 
-      <!-- Owner / Employee Toggle -->
-      <div class="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 mb-5 gap-1">
+  <div class="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
+    <!-- Logo & title -->
+    <div class="text-center">
+      <div class="w-16 h-16 bg-emerald-500/20 border-2 border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-900/30" id="settings-logo-preview">
+        <i data-lucide="leaf" class="w-8 h-8 text-emerald-400"></i>
+      </div>
+      <h1 class="text-3xl font-black text-white tracking-tight" id="auth-title">Welcome Back</h1>
+      <p class="text-emerald-400/80 text-sm mt-1 font-medium" id="auth-subtitle">Sign in to your ERP</p>
+    </div>
+
+    <div class="w-full max-w-sm">
+      <!-- Owner / Employee Toggle — hidden during signup -->
+      <div id="auth-mode-toggle" class="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 mb-4 gap-1">
         <button id="auth-toggle-owner" onclick="window.setAuthMode('owner')"
           class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-600 text-white shadow">
           👑 Owner Login
@@ -331,26 +337,32 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
         </button>
       </div>
 
-      <div class="auth-card p-7">
+      <div class="auth-card p-6">
         <!-- OWNER Login Form -->
         <div id="owner-login-section">
           <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
             <div><label class="lbl text-slate-300">Email</label>
-              <input type="email" id="login-email" required class="inp bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500" placeholder="you@example.com"></div>
+              <input type="email" id="login-email" required class="inp bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500" placeholder="you@example.com" autocomplete="email"></div>
             <div><label class="lbl text-slate-300">Password</label>
               <div class="relative">
-                <input type="password" id="login-password" required class="inp bg-white/5 border-white/10 text-white placeholder:text-slate-500 pr-11">
+                <input type="password" id="login-password" required class="inp bg-white/5 border-white/10 text-white placeholder:text-slate-500 pr-11" autocomplete="current-password">
                 <button type="button" class="eye-btn absolute right-3 top-1/2 -translate-y-1/2" onclick="toggleEye('login-password',this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
               </div></div>
-            <button type="submit" id="login-btn" class="btn btn-primary w-full justify-center py-2.5">
+            <button type="submit" id="login-btn" class="btn btn-primary w-full justify-center py-3 text-sm font-bold">
               <i data-lucide="log-in" class="w-4 h-4"></i> Sign In as Owner
             </button>
-            <div class="text-center mt-2">
-              <button type="button" onclick="showForgotPassword()" class="text-emerald-400 text-sm font-medium hover:text-emerald-300 transition-colors">Forgot Password?</button>
+            <div class="flex items-center justify-between">
+              <button type="button" onclick="showForgotPassword()" class="text-emerald-400 text-xs font-medium hover:text-emerald-300 transition-colors">Forgot Password?</button>
+              <button type="button" onclick="window.startDemoMode()" class="text-amber-400 text-xs font-bold hover:text-amber-300 transition-colors">🎮 Try Demo</button>
             </div>
           </form>
-          <p class="text-center text-slate-400 text-sm mt-4">New? <button onclick="showSignup()" class="text-emerald-400 font-semibold">Create account</button></p>
-        <p class="text-center mt-2"><button onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-slate-500 text-xs hover:text-slate-300 underline">Privacy Policy</button></p>
+          <div class="border-t border-white/10 mt-4 pt-4 flex items-center justify-between">
+            <span class="text-slate-400 text-sm">New here?</span>
+            <button onclick="showSignup()" class="text-emerald-400 font-bold text-sm hover:text-emerald-300">Create account →</button>
+          </div>
+          <div class="text-center mt-3">
+            <button onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-slate-500 text-xs hover:text-slate-400 underline">Privacy Policy</button>
+          </div>
         </div>
 
         <!-- EMPLOYEE Login Form -->
@@ -370,23 +382,23 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
               </div>
             </div>
             <p id="emp-login-error" class="text-red-400 text-sm hidden"></p>
-            <button type="submit" id="emp-login-btn" class="btn w-full justify-center py-2.5" style="background:#3b82f6;color:white">
+            <button type="submit" id="emp-login-btn" class="btn w-full justify-center py-3 font-bold text-sm" style="background:#3b82f6;color:white">
               <i data-lucide="log-in" class="w-4 h-4"></i> Sign In as Employee
             </button>
-            <div class="text-center mt-2">
-              <button type="button" onclick="window.empForgotPassword()" class="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors">Forgot Password? (Request to Owner)</button>
+            <div class="text-center">
+              <button type="button" onclick="window.empForgotPassword()" class="text-blue-400 text-xs font-medium hover:text-blue-300 transition-colors">Forgot Password? (Request to Owner)</button>
             </div>
           </form>
         </div>
 
-        <!-- Signup (owner only) -->
-        <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-3 hidden mt-1">
+        <!-- Signup Form — shown separately, hides login -->
+        <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-3 hidden">
           <div><label class="lbl text-slate-300">Business Name</label>
-            <input type="text" id="signup-biz-name" class="inp bg-white/5 border-white/10 text-white" placeholder="My Business "></div>
+            <input type="text" id="signup-biz-name" class="inp bg-white/5 border-white/10 text-white" placeholder="My Business"></div>
           <div><label class="lbl text-slate-300">Email</label>
-            <input type="email" id="signup-email" required class="inp bg-white/5 border-white/10 text-white"></div>
+            <input type="email" id="signup-email" required class="inp bg-white/5 border-white/10 text-white" autocomplete="email"></div>
           <div><label class="lbl text-slate-300">Password</label>
-            <input type="password" id="signup-password" required class="inp bg-white/5 border-white/10 text-white"></div>
+            <input type="password" id="signup-password" required class="inp bg-white/5 border-white/10 text-white" autocomplete="new-password"></div>
           <div>
             <label class="lbl text-slate-300">Logo <span class="text-slate-500 font-normal normal-case">(optional)</span></label>
             <div class="flex items-center gap-3">
@@ -399,9 +411,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
               <div class="w-16 h-9 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center overflow-hidden" id="signup-sig-preview"><i data-lucide="pen-tool" class="text-slate-400 w-4 h-4"></i></div>
               <input type="file" accept="image/*" onchange="handleSignupAsset(event,'signature')" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/20 file:text-emerald-400">
             </div></div>
-          <button type="submit" class="btn btn-primary w-full justify-center py-2.5">Create Account</button>
-          <p class="text-center text-slate-400 text-xs mt-2">By creating an account you agree to our <button type="button" onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-emerald-400 font-semibold underline">Privacy Policy</button></p>
-          <p class="text-center text-slate-400 text-sm mt-1">Have account? <button type="button" onclick="showLogin()" class="text-emerald-400 font-semibold">Sign in</button></p>
+          <button type="submit" class="btn btn-primary w-full justify-center py-3 font-bold">Create Account</button>
+          <p class="text-center text-slate-400 text-xs mt-1">By creating an account you agree to our <button type="button" onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-emerald-400 font-semibold underline">Privacy Policy</button></p>
+          <div class="border-t border-white/10 mt-3 pt-3 text-center">
+            <button type="button" onclick="showLogin()" class="text-emerald-400 font-bold text-sm">← Back to Sign In</button>
+          </div>
         </form>
       </div>
     </div>
@@ -1832,8 +1846,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
         <button onclick="closeInvModal()" class="btn btn-icon btn-ghost"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
     </div>
-    <div class="modal-body bg-slate-200 p-2" id="inv-modal-body">
-      <div id="invoice-render-area" class="bg-white shadow-xl text-slate-800 leading-relaxed" style="width:210mm;min-height:297mm;padding:8mm 10mm;font-size:11px;margin:0 auto;transform-origin:top left"></div>
+    <div class="modal-body bg-slate-200 p-2 overflow-x-auto" id="inv-modal-body">
+      <div id="invoice-render-area" class="bg-white shadow-xl text-slate-800 leading-relaxed" style="width:210mm;min-height:297mm;padding:8mm 10mm;font-size:11px;margin:0 auto;"></div>
     </div>
   </div>
 </div>
@@ -2057,16 +2071,27 @@ function toggleEye(inputId, btn) {
 }
 
 function showLogin() {
-    document.getElementById('login-form').classList.remove('hidden');
-    document.getElementById('signup-form').classList.add('hidden');
+    var ownerSec = document.getElementById('owner-login-section');
+    var signupForm = document.getElementById('signup-form');
+    var toggle = document.getElementById('auth-mode-toggle');
+    if(ownerSec) ownerSec.classList.remove('hidden');
+    if(signupForm) signupForm.classList.add('hidden');
+    if(toggle) toggle.classList.remove('hidden');
     document.getElementById('auth-title').textContent = 'Welcome Back';
     document.getElementById('auth-subtitle').textContent = 'Sign in to your ERP';
+    window.setAuthMode && window.setAuthMode('owner');
 }
 function showSignup() {
-    document.getElementById('login-form').classList.add('hidden');
-    document.getElementById('signup-form').classList.remove('hidden');
+    var ownerSec = document.getElementById('owner-login-section');
+    var empSec = document.getElementById('employee-login-section');
+    var signupForm = document.getElementById('signup-form');
+    var toggle = document.getElementById('auth-mode-toggle');
+    if(ownerSec) ownerSec.classList.add('hidden');
+    if(empSec) empSec.classList.add('hidden');
+    if(signupForm) signupForm.classList.remove('hidden');
+    if(toggle) toggle.classList.add('hidden'); // Hide toggle on signup — not relevant
     document.getElementById('auth-title').textContent = 'Create Account';
-    document.getElementById('auth-subtitle').textContent = 'Setup your Ayurvedic ERP';
+    document.getElementById('auth-subtitle').textContent = 'Setup your professional ERP';
 }
 
 // ── SPLASH ──
@@ -2371,24 +2396,41 @@ window.downloadPDF = async function() {
     var invEl = element.querySelector('.inv-id-tracker');
     var invId = invEl ? (invEl.dataset.id || 'invoice') : 'invoice';
 
-    window.showToast && window.showToast('PDF बन रही है...');
-    var blob = await generatePDFBlob(element, invId + '.pdf');
-    if(!blob) {
-        window.showToast && window.showToast('PDF error!', 'error');
-        return;
+    window.showToast && window.showToast('Generating PDF...');
+
+    // Clone element to body at full size for accurate capture
+    var clone = element.cloneNode(true);
+    clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:white;font-size:11px;padding:8mm 10mm;box-sizing:border-box;z-index:-1;';
+    document.body.appendChild(clone);
+
+    try {
+        var blob = await html2pdf().set({
+            margin: 0,
+            filename: invId + '.pdf',
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, windowWidth: 794 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(clone).output('blob');
+
+        document.body.removeChild(clone);
+
+        if(!blob) { window.showToast && window.showToast('PDF error!', 'error'); return; }
+        await downloadPDFBlob(blob, invId + '.pdf');
+        window.showToast && window.showToast('PDF downloaded! ✅');
+    } catch(e) {
+        if(clone.parentNode) document.body.removeChild(clone);
+        window.showToast && window.showToast('PDF error: ' + e.message, 'error');
     }
-    await downloadPDFBlob(blob, invId + '.pdf');
-    window.showToast && window.showToast('PDF downloaded! ✅');
 };
 
 // ── WHATSAPP SHARE ──
 async function shareInvoiceWA() {
     var id = window._curInvId || window._currentViewInvoiceId;
-    if(!id) { window.showToast && window.showToast('Invoice खोलें पहले', 'error'); return; }
+    if(!id) { window.showToast && window.showToast('Open an invoice first', 'error'); return; }
     var inv = window.AppState && window.AppState.invoices.find(function(i){ return i.id === id; });
     if(!inv) return;
 
-    var biz = (window.AppState.settings && window.AppState.settings.businessName) || 'My Business ';
+    var biz = (window.AppState.settings && window.AppState.settings.businessName) || 'My Business';
     var fmt = window.formatCurrency || function(a){ return '₹' + Number(a).toFixed(2); };
     var msg = '🌿 *' + biz + '*'
         + '\n\nHello ' + inv.client.name + ','
@@ -2396,44 +2438,51 @@ async function shareInvoiceWA() {
         + '\n📅 Date: ' + inv.date
         + '\n💰 Amount: *' + fmt(inv.grandTotal, inv.currency) + '*'
         + '\n' + (inv.paymentStatus === 'paid' ? '✅ Paid' : '⏳ Payment Pending')
-        + '\n\nThank you! 🙏';
+        + '\n\nThank you! 🙏'
+        + (window._waDigitalLinkOverride || '');
 
     var mobile = inv.client && inv.client.mobile ? inv.client.mobile.replace(/\D/g, '') : '';
     var num = mobile.length === 10 ? '91' + mobile : mobile;
-    
-    var area = document.getElementById('invoice-render-area');
 
-    // Step 1: Try Web Share API with PDF Blob (works on Android Chrome)
-    if(area && typeof html2pdf !== 'undefined' && navigator.share && navigator.canShare) {
+    // Generate PDF from clone (not visible area) — fixes blank PDF
+    var element = document.getElementById('invoice-render-area');
+    if(element && typeof html2pdf !== 'undefined') {
+        var clone = element.cloneNode(true);
+        clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;background:white;font-size:11px;padding:8mm 10mm;box-sizing:border-box;z-index:-1;';
+        document.body.appendChild(clone);
         try {
-            window.showToast && window.showToast('PDF बन रही है...');
-            var pdfBlob = await generatePDFBlob(area, id + '.pdf');
-            if(pdfBlob) {
-                var pdfFile = new File([pdfBlob], id + '.pdf', { type: 'application/pdf' });
-                if(navigator.canShare({ files: [pdfFile] })) {
-                    await navigator.share({ files: [pdfFile], text: msg });
+            window.showToast && window.showToast('Preparing PDF...');
+            var pdfBlob = await html2pdf().set({
+                margin:0, filename:id+'.pdf',
+                image:{type:'jpeg',quality:0.92},
+                html2canvas:{scale:2,useCORS:true,logging:false,windowWidth:794},
+                jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+            }).from(clone).output('blob');
+            document.body.removeChild(clone);
+
+            if(pdfBlob && navigator.share && navigator.canShare) {
+                var pdfFile = new File([pdfBlob], id+'.pdf', {type:'application/pdf'});
+                if(navigator.canShare({files:[pdfFile]})) {
+                    await navigator.share({files:[pdfFile], text:msg});
                     window.showToast && window.showToast('Shared! ✅');
                     return;
                 }
             }
-        } catch(e) {
-            if(e.name === 'AbortError') return;
-        }
-    }
-
-    // Step 2: Open WhatsApp with text + download PDF
-    var waUrl = 'https://wa.me/' + (num || '') + '?text=' + encodeURIComponent(msg);
-    window.location.href = waUrl;
-
-    // Download PDF after short delay
-    if(area) {
-        setTimeout(async function() {
-            var blob = await generatePDFBlob(area, id + '.pdf');
-            if(blob) {
-                await downloadPDFBlob(blob, id + '.pdf');
-                window.showToast && window.showToast('WhatsApp खुला + PDF download ✅', 'info');
+            // Fallback: open WA + download PDF
+            window.open('https://wa.me/'+(num||'')+'?text='+encodeURIComponent(msg), '_blank');
+            if(pdfBlob) {
+                setTimeout(async function(){
+                    await downloadPDFBlob(pdfBlob, id+'.pdf');
+                    window.showToast && window.showToast('WhatsApp opened + PDF downloaded 📎','info');
+                }, 800);
             }
-        }, 1000);
+        } catch(e) {
+            if(clone.parentNode) document.body.removeChild(clone);
+            if(e.name === 'AbortError') return;
+            window.open('https://wa.me/'+(num||'')+'?text='+encodeURIComponent(msg), '_blank');
+        }
+    } else {
+        window.open('https://wa.me/'+(num||'')+'?text='+encodeURIComponent(msg), '_blank');
     }
 }
 
@@ -3452,10 +3501,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 800);
 
         window.toggleAuthMode = function(mode) {
-            const lForm = document.getElementById('login-form'); if(lForm) lForm.classList.toggle('hidden', mode === 'signup');
-            const sForm = document.getElementById('signup-form'); if(sForm) sForm.classList.toggle('hidden', mode === 'login');
-            setText('auth-title', mode === 'login' ? 'Welcome Back' : 'Create Account');
-            setText('auth-subtitle', mode === 'login' ? 'Sign in to access your dashboard.' : 'Setup your professional Ayurvedic ERP.');
+            if(mode === 'login') { showLogin && showLogin(); }
+            else if(mode === 'signup') { showSignup && showSignup(); }
         }
 
         window.handleLogin = async function(e) {
@@ -3569,9 +3616,24 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clear any lingering listeners from a previous session before starting new ones
             clearFirestoreListeners();
 
-            // Modifying listeners to split Data securely into Active vs Deleted
+            // ── INSTANT LOAD from localStorage cache (before Firestore responds) ──
+            try {
+                var backup = JSON.parse(localStorage.getItem('ayur_backup_'+uid)||'null');
+                if(backup) {
+                    if(backup.products && !window.AppState.products.length) window.AppState.products = backup.products;
+                    if(backup.clients && !window.AppState.clients.length) window.AppState.clients = backup.clients;
+                    if(backup.invoices && !window.AppState.invoices.length) window.AppState.invoices = backup.invoices;
+                    if(backup.expenses && !window.AppState.expenses.length) window.AppState.expenses = backup.expenses;
+                    if(backup.settings) window.AppState.settings = Object.assign(window.AppState.settings||{}, backup.settings);
+                    // Render immediately with cached data
+                    if(window.updateDashboard) setTimeout(window.updateDashboard, 100);
+                    if(window.renderNavigation) setTimeout(window.renderNavigation, 100);
+                }
+            } catch(e) {}
+
+            // Firestore listeners — only count NETWORK reads (not cache)
             window.unsubProducts = onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'products'), (snap) => { 
-                if(window._incReads) window._incReads(snap.docs.length);
+                if(window._incReads && !snap.metadata.fromCache) window._incReads(snap.docs.length);
                 const all = snap.docs.map(d => ({id: d.id, ...d.data()})); 
                 window.AppState.products = all.filter(p => !p.isDeleted);
                 window.AppState.deletedProducts = all.filter(p => p.isDeleted);
@@ -3581,7 +3643,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, (err) => { console.error("Products Listener Error:", err); window._handleQuotaError(err); });
 
             window.unsubClients = onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'clients'), (snap) => { 
-                if(window._incReads) window._incReads(snap.docs.length);
+                if(window._incReads && !snap.metadata.fromCache) window._incReads(snap.docs.length);
                 const all = snap.docs.map(d => ({id: d.id, ...d.data()})); 
                 window.AppState.clients = all.filter(c => !c.isDeleted);
                 window.AppState.deletedClients = all.filter(c => c.isDeleted);
@@ -3590,7 +3652,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, (err) => { console.error("Clients Listener Error:", err); window._handleQuotaError(err); });
 
             window.unsubInvoices = onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'invoices'), (snap) => { 
-                if(window._incReads) window._incReads(snap.docs.length);
+                if(window._incReads && !snap.metadata.fromCache) window._incReads(snap.docs.length);
                 const all = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => b.createdAt - a.createdAt); 
                 window.AppState.invoices = all.filter(i => !i.isDeleted);
                 window.AppState.deletedInvoices = all.filter(i => i.isDeleted);
@@ -3606,7 +3668,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, (err) => { console.error("Invoices Listener Error:", err); window._handleQuotaError(err); });
 
             window.unsubExpenses = onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'expenses'), (snap) => {
-                if(window._incReads) window._incReads(snap.docs.length);
+                if(window._incReads && !snap.metadata.fromCache) window._incReads(snap.docs.length);
                 const all = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => new Date(b.date) - new Date(a.date));
                 window.AppState.expenses = all.filter(e => !e.isDeleted);
                 window.AppState.deletedExpenses = all.filter(e => e.isDeleted);
@@ -4771,8 +4833,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 s.netPayableExclGST = document.getElementById('set-net-excl-gst') ? document.getElementById('set-net-excl-gst').checked : false;
                 s.taxableExclGST = document.getElementById('set-taxable-excl-gst') ? document.getElementById('set-taxable-excl-gst').checked : false;
                 
-                s.features = {}; const toggles = ['expenses', 'multiDoc', 'currency', 'shipping', 'tds', 'rcm', 'hsn', 'dueDate', 'ledger', 'creditNote', 'margin', 'batch', 'deleteBtn', 'stamp', 'returnStock'];
-                toggles.forEach(t => { const el = document.getElementById(`feat-${t}`); if(el) s.features[t] = el.checked; });
+                s.features = s.features || {};
+                const allToggles = ['expenses','multiDoc','currency','shipping','tds','rcm','hsn','dueDate','ledger','creditNote','margin','batch','deleteBtn','stamp','returnStock','autoCreateClient','autoCreateProduct','waQRLink','barcodeScannerFeature','aiPriceSuggestion','recurringInvoices','digitalQROnInvoice'];
+                allToggles.forEach(t => {
+                    const el = document.getElementById(`feat-${t}`) || document.getElementById(`smod-feat-${t}`);
+                    if(el) s.features[t] = el.checked;
+                });
 
                 const wantPinEl = document.getElementById('set-pin-enable'); const wantPin = wantPinEl ? wantPinEl.checked : false; 
                 const curPinInp = document.getElementById('set-pin-current') ? document.getElementById('set-pin-current').value : ''; 
@@ -6537,13 +6603,26 @@ var _settingsModals = {
       }).join('') + '</div>';
     },
     save: function() {
-      var feats = {};
+      var feats = Object.assign({}, (window.AppState&&window.AppState.settings&&window.AppState.settings.features)||{});
       ['expenses','multiDoc','currency','shipping','tds','rcm','hsn','dueDate','ledger','creditNote','margin','batch','deleteBtn','stamp','returnStock','autoCreateClient','autoCreateProduct','waQRLink','barcodeScannerFeature','aiPriceSuggestion','recurringInvoices','digitalQROnInvoice'].forEach(function(k){
-        var el = document.getElementById('smod-feat-'+k); if(el) feats[k] = el.checked;
-        var orig = document.getElementById('feat-'+k); if(orig && el) orig.checked = el.checked;
+        var el = document.getElementById('smod-feat-'+k);
+        if(el) {
+          feats[k] = el.checked;
+          // Sync the main settings page toggles too
+          var orig = document.getElementById('feat-'+k); if(orig) orig.checked = el.checked;
+        }
       });
-      if(window.AppState) window.AppState.settings.features = Object.assign(window.AppState.settings.features||{}, feats);
+      if(window.AppState && window.AppState.settings) window.AppState.settings.features = feats;
+      // Save to Firestore immediately
+      if(window._setDoc && window._doc && window._db && window._appId && window.AppState && window.AppState.user && !window._isDemoMode) {
+        window._setDoc(window._doc(window._db,'artifacts',window._appId,'users',window.AppState.user.uid,'config','settings'), window.AppState.settings)
+          .then(function(){ window.showToast&&window.showToast('Active modules saved! ✅'); })
+          .catch(function(){ window.showToast&&window.showToast('Saved locally','info'); });
+      } else {
+        window.showToast&&window.showToast('Active modules updated!');
+      }
       if(window.applyFeatureVisibility) window.applyFeatureVisibility();
+      if(window.renderNavigation) window.renderNavigation();
     }
   },
   'hotkeys': {
@@ -9432,37 +9511,37 @@ window.switchToAccount = function(email, type, bizUidOrUid) {
         var emp = emps.find(function(e){ return e.email===email && e.active!==false; });
         if(!emp) { window.showToast && window.showToast('Employee account not found','error'); return; }
         if(window.clearFirestoreListeners) window.clearFirestoreListeners();
-        if(window._auth && window._auth.currentUser) {
-            // Sign out Firebase first, then start employee session
-            var signOutFn = window._auth.signOut ? window._auth.signOut.bind(window._auth) : null;
-            var doStart = function() {
-                var session = {empId:emp.id, bizUid:bizUidOrUid, email:email, loginAt:new Date().toISOString()};
-                localStorage.setItem('ayur_emp_session', JSON.stringify(session));
-                window._startEmployeeSession(emp, bizUidOrUid);
-            };
-            if(signOutFn) signOutFn().then(doStart).catch(doStart);
-            else doStart();
-        } else {
+        var doStart = function() {
             var session = {empId:emp.id, bizUid:bizUidOrUid, email:email, loginAt:new Date().toISOString()};
             localStorage.setItem('ayur_emp_session', JSON.stringify(session));
             window._startEmployeeSession(emp, bizUidOrUid);
-        }
+            setTimeout(function(){ window.renderSavedAccounts&&window.renderSavedAccounts(); }, 400);
+        };
+        if(window._auth && window._auth.currentUser) {
+            var signOutFn = window._auth.signOut ? window._auth.signOut.bind(window._auth) : null;
+            if(signOutFn) signOutFn().then(doStart).catch(doStart);
+            else doStart();
+        } else { doStart(); }
+
     } else {
-        // Owner account — sign into Firebase
         var pw = prompt('Enter password for ' + email + ':');
         if(!pw) return;
-        if(!window._signInForPinReset) { window.showToast && window.showToast('Auth not ready, reload page','error'); return; }
+        if(!window._signInForPinReset) { window.showToast&&window.showToast('Auth not ready, reload page','error'); return; }
         window.showToast && window.showToast('Signing in...', 'info');
         window._signInForPinReset(email, pw).then(function(cred) {
-            // Clear employee session if any
             localStorage.removeItem('ayur_emp_session');
             window._isEmployeeSession = false;
             window._employeeData = null;
             window._employeePermissions = {};
-            var banner = document.getElementById('employee-banner');
-            if(banner) banner.remove();
-            // onAuthStateChanged will fire and set up the app properly
+            window._restrictedFnsWrapped = false;
+            var banner = document.getElementById('employee-banner'); if(banner) banner.remove();
             window.showToast && window.showToast('Switched to ' + email + ' ✅');
+            // onAuthStateChanged fires → fresh owner state, full feature restore
+            setTimeout(function(){
+                window.renderSavedAccounts && window.renderSavedAccounts();
+                if(window.applyFeatureVisibility) window.applyFeatureVisibility();
+                if(window.renderNavigation) window.renderNavigation();
+            }, 1500);
         }).catch(function(e) {
             window.showToast && window.showToast('Wrong password: ' + e.message, 'error');
         });
@@ -9530,4 +9609,472 @@ window.applyEmployeeRestrictions = function() {
     setTimeout(window._enforceEmployeeUI, 1200);
 };
 
+</script>
+
+<script>
+// ================================================================
+// DEMO MODE — No Firebase, fully local
+// ================================================================
+window.DEMO_DATA = {
+    settings: {
+        businessName: 'Dev Ayurveda (Demo)', address: 'Kansi, Darbhanga Bihar 847428',
+        phone: '7254991801', gstin: '07AABCD1234E1Z5', email: 'demo@devayurveda.in',
+        template: 'ayurveda', logoDisplay: 'name', upi: 'devayurveda@upi',
+        bankName: 'Punjab National Bank', bankAcc: '6914001700159201', bankIfsc: 'PUNB691400',
+        customTerms: 'Thank you for your trust and business!',
+        features: { expenses:true, multiDoc:true, hsn:true, dueDate:true, ledger:true,
+            batch:true, deleteBtn:true, stamp:false, digitalQROnInvoice:true, waQRLink:true }
+    },
+    clients: [
+        { id:'demo_c1', name:'Rajesh Kumar', mobile:'9876543210', gstin:'', address:'Delhi', journal:[], isDeleted:false },
+        { id:'demo_c2', name:'Priya Sharma', mobile:'9123456780', gstin:'', address:'Mumbai', journal:[], isDeleted:false },
+        { id:'demo_c3', name:'Amit Singh', mobile:'9988776655', gstin:'07BBBBB1234C1Z6', address:'Noida', journal:[], isDeleted:false }
+    ],
+    products: [
+        { id:'demo_p1', name:'Ashwagandha Capsules', category:'Medicine', hsn:'3004', rate:450, cost:200, gst:12, stock:50, isDeleted:false },
+        { id:'demo_p2', name:'Triphala Churna 100g', category:'Medicine', hsn:'3004', rate:180, cost:80, gst:12, stock:30, isDeleted:false },
+        { id:'demo_p3', name:'Brahmi Oil 200ml', category:'Oil', hsn:'3304', rate:320, cost:150, gst:18, stock:25, isDeleted:false },
+        { id:'demo_p4', name:'Panchakarma Kit', category:'Kit', hsn:'3006', rate:1200, cost:600, gst:12, stock:10, isDeleted:false }
+    ],
+    invoices: [
+        { id:'DEMO001', date:'2026-03-15', docType:'Tax Invoice', status:'final', paymentStatus:'paid', paymentMode:'upi',
+          client:{name:'Rajesh Kumar',mobile:'9876543210',gstin:'',address:'Delhi'},
+          items:[{name:'Ashwagandha Capsules',qty:2,rate:450,gst:12,hsn:'3004'},{name:'Triphala Churna 100g',qty:1,rate:180,gst:12,hsn:'3004'}],
+          subtotal:980, totalTax:117.6, grandTotal:1097.6, currency:'INR', createdAt:Date.now()-7*86400000 },
+        { id:'DEMO002', date:'2026-03-20', docType:'Tax Invoice', status:'final', paymentStatus:'unpaid', paymentMode:'cash',
+          client:{name:'Priya Sharma',mobile:'9123456780',gstin:'',address:'Mumbai'},
+          items:[{name:'Brahmi Oil 200ml',qty:3,rate:320,gst:18,hsn:'3304'}],
+          subtotal:960, totalTax:172.8, grandTotal:1132.8, currency:'INR', createdAt:Date.now()-2*86400000 },
+        { id:'DEMO003', date:'2026-03-28', docType:'Tax Invoice', status:'final', paymentStatus:'paid', paymentMode:'upi',
+          client:{name:'Amit Singh',mobile:'9988776655',gstin:'07BBBBB1234C1Z6',address:'Noida'},
+          items:[{name:'Panchakarma Kit',qty:1,rate:1200,gst:12,hsn:'3006'},{name:'Ashwagandha Capsules',qty:3,rate:450,gst:12,hsn:'3004'}],
+          subtotal:2550, totalTax:306, grandTotal:2856, currency:'INR', createdAt:Date.now()-1*86400000 }
+    ],
+    expenses: [
+        { id:'demo_e1', date:'2026-03-10', category:'Rent', description:'Monthly shop rent', amount:8000, paymentMode:'bank', isDeleted:false },
+        { id:'demo_e2', date:'2026-03-15', category:'Supplies', description:'Packing materials', amount:2500, paymentMode:'cash', isDeleted:false }
+    ]
+};
+
+window.startDemoMode = function() {
+    window._isDemoMode = true;
+    // Set demo AppState
+    if(!window.AppState) window.AppState = {};
+    window.AppState.user = { uid: 'demo_user_001', email: 'demo@devayurveda.in', isDemo: true };
+    window.AppState.settings = Object.assign({}, window.DEMO_DATA.settings);
+    window.AppState.clients = window.DEMO_DATA.clients.slice();
+    window.AppState.products = window.DEMO_DATA.products.slice();
+    window.AppState.invoices = window.DEMO_DATA.invoices.slice();
+    window.AppState.expenses = window.DEMO_DATA.expenses.slice();
+    window.AppState.services = [];
+    window.AppState.draft = { id:'DEMO_INV', docType:'Tax Invoice', currency:'INR', items:[], discount:0,
+        discountType:'fixed', tds:0, isRcm:false, poNo:'', vehicleNo:'', ewayBill:'',
+        paymentMode:'upi', paymentStatus:'unpaid', notes:'', dueDate:'', client:{name:'',mobile:'',gstin:'',address:''} };
+
+    // Hide auth, show app
+    var authC = document.getElementById('auth-wrap'); if(authC) authC.style.display='none';
+    var appC = document.getElementById('app'); if(appC) appC.style.display='flex';
+
+    // Setup sidebar
+    if(window.renderNavigation) window.renderNavigation();
+    if(window.switchTab) window.switchTab('dashboard');
+    if(window.populateSettingsUI) setTimeout(window.populateSettingsUI, 300);
+
+    // Demo banner
+    setTimeout(function(){
+        var existing = document.getElementById('demo-banner');
+        if(existing) return;
+        var banner = document.createElement('div');
+        banner.id = 'demo-banner';
+        banner.style.cssText = 'background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;padding:8px 16px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:space-between;z-index:50;flex-shrink:0;';
+        banner.innerHTML = '<span>🎮 Demo Mode — Data is not saved to any server</span>'
+            + '<button onclick="window.exitDemoMode()" style="background:rgba(255,255,255,.2);border:none;color:white;padding:3px 10px;border-radius:8px;font-size:10px;cursor:pointer;font-weight:700;">Exit Demo</button>';
+        var topbar = document.getElementById('topbar');
+        if(topbar && topbar.parentElement) topbar.parentElement.insertBefore(banner, topbar);
+        if(window.updateDashboard) window.updateDashboard();
+    }, 400);
+
+    window.showToast && window.showToast('🎮 Welcome to Demo Mode! Explore all features.', 'info');
+};
+
+window.exitDemoMode = function() {
+    window._isDemoMode = false;
+    var banner = document.getElementById('demo-banner'); if(banner) banner.remove();
+    var authC = document.getElementById('auth-wrap'); if(authC) authC.style.display='block';
+    var appC = document.getElementById('app'); if(appC) appC.style.display='none';
+    if(window.AppState) window.AppState = window.getInitialState ? window.getInitialState() : {};
+};
+
+// Block Firebase writes in demo mode
+(function(){
+    var checkDemo = setInterval(function(){
+        if(window._addDoc && !window._addDoc._demoGuarded) {
+            window._addDoc._demoGuarded = true;
+            clearInterval(checkDemo);
+            var origAdd = window._addDoc;
+            window._addDoc = async function() {
+                if(window._isDemoMode) {
+                    window.showToast && window.showToast('Demo mode — changes not saved','info');
+                    return { id: 'demo_' + Date.now() };
+                }
+                return origAdd.apply(this, arguments);
+            };
+        }
+        if(window._setDoc && !window._setDoc._demoGuarded) {
+            window._setDoc._demoGuarded = true;
+            var origSet = window._setDoc;
+            window._setDoc = async function() {
+                if(window._isDemoMode) { window.showToast && window.showToast('Demo mode — changes not saved','info'); return; }
+                return origSet.apply(this, arguments);
+            };
+        }
+        if(window._updateDoc && !window._updateDoc._demoGuarded) {
+            window._updateDoc._demoGuarded = true;
+            var origUp = window._updateDoc;
+            window._updateDoc = async function() {
+                if(window._isDemoMode) { return; }
+                return origUp.apply(this, arguments);
+            };
+        }
+    }, 500);
+})();
+</script>
+
+<script>
+// ================================================================
+// ONBOARDING TUTORIAL SYSTEM
+// ================================================================
+window.ONBOARDING_STEPS = [
+    { target:'#tab-dashboard,#view-dashboard h2,button[data-tab="dashboard"]', title:'📊 Dashboard', body:'Your business command center. See revenue, health score, GST summary, and daily sales at a glance.', tab:'dashboard' },
+    { target:'button[data-tab="invoice"],#fab', title:'📄 Create Invoice', body:'Tap Invoice in the sidebar or the green + button. Add client, search products, choose payment mode, then Preview & Finalize.', tab:'invoice' },
+    { target:'button[data-tab="records"]', title:'📋 Sales Records', body:'All your finalized invoices live here. View, download PDF, share via WhatsApp, or check payment status.', tab:'records' },
+    { target:'button[data-tab="inventory"]', title:'📦 Inventory', body:'Add your products with HSN code, GST%, and stock quantity. They appear automatically in the invoice search.', tab:'inventory' },
+    { target:'button[data-tab="services"]', title:'✨ Services', body:'Add consultation, treatment, or therapy services. Toggle between Goods/Services in the invoice screen.', tab:'services' },
+    { target:'button[data-tab="clients"]', title:'👥 Client CRM', body:'View client history, outstanding amounts, and ledger. Send payment reminders directly via WhatsApp.', tab:'clients' },
+    { target:'button[data-tab="employees"]', title:'👤 Employees', body:'Add staff with login credentials. Set 70+ individual permissions. Monitor their activity in real-time.', tab:'employees' },
+    { target:'button[data-tab="settings"]', title:'⚙️ Settings', body:'Set your business name, GSTIN, bank details, UPI ID, logo, and signature. These appear on all invoices.', tab:'settings' },
+    { target:null, title:'🎉 You\'re Ready!', body:'You now know the basics! Start by going to Settings to set up your business profile, then create your first invoice.', tab:null }
+];
+
+window._onboardingStep = 0;
+window._onboardingActive = false;
+
+window.startOnboarding = function() {
+    window._onboardingStep = 0;
+    window._onboardingActive = true;
+    localStorage.setItem('ayur_onboarding_done', '1');
+    window._showOnboardingStep();
+};
+
+window._showOnboardingStep = function() {
+    var existing = document.getElementById('onboarding-overlay');
+    if(existing) existing.remove();
+
+    var step = window.ONBOARDING_STEPS[window._onboardingStep];
+    if(!step) { window._onboardingActive = false; return; }
+
+    var total = window.ONBOARDING_STEPS.length;
+    var current = window._onboardingStep + 1;
+
+    // Switch to relevant tab
+    if(step.tab && window.switchTab) {
+        try { window.switchTab(step.tab); } catch(e){}
+    }
+
+    // Find target element position
+    var targetEl = step.target ? document.querySelector(step.target) : null;
+    var highlight = '';
+    if(targetEl) {
+        var rect = targetEl.getBoundingClientRect();
+        targetEl.style.outline = '3px solid #10b981';
+        targetEl.style.outlineOffset = '3px';
+        targetEl.style.borderRadius = '8px';
+        highlight = targetEl;
+    }
+
+    var overlay = document.createElement('div');
+    overlay.id = 'onboarding-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99997;pointer-events:none;';
+
+    // Semi-transparent backdrop
+    var backdrop = document.createElement('div');
+    backdrop.style.cssText = 'position:absolute;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(2px);';
+    overlay.appendChild(backdrop);
+
+    // Tooltip card
+    var card = document.createElement('div');
+    card.style.cssText = 'position:absolute;bottom:80px;left:50%;transform:translateX(-50%);width:min(360px,90vw);background:white;border-radius:20px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);pointer-events:all;';
+    card.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+        + '<div style="font-size:18px;font-weight:900;color:#1e293b">' + step.title + '</div>'
+        + '<button onclick="window._closeOnboarding()" style="background:#f1f5f9;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">✕</button>'
+        + '</div>'
+        + '<p style="color:#475569;font-size:14px;line-height:1.6;margin-bottom:20px">' + step.body + '</p>'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'
+        + '<div style="display:flex;gap:5px">'
+        + Array.from({length:total}).map(function(_,i){
+            return '<div style="width:'+(i===window._onboardingStep?'20':'8')+'px;height:8px;border-radius:4px;background:'+(i===window._onboardingStep?'#10b981':'#e2e8f0')+';transition:all .3s;"></div>';
+        }).join('')
+        + '</div>'
+        + '<div style="display:flex;gap:8px">'
+        + (window._onboardingStep > 0 ? '<button onclick="window._prevOnboardingStep()" style="padding:8px 16px;border:1px solid #e2e8f0;border-radius:10px;background:white;font-weight:600;font-size:13px;cursor:pointer;color:#64748b;">← Back</button>' : '')
+        + '<button onclick="window._nextOnboardingStep()" style="padding:8px 20px;background:#10b981;color:white;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;">'
+        + (current === total ? '🎉 Done!' : 'Next →') + '</button>'
+        + '</div></div>'
+        + '<div style="text-align:center;margin-top:10px;color:#94a3b8;font-size:11px">Step ' + current + ' of ' + total + '</div>';
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+};
+
+window._nextOnboardingStep = function() {
+    window._clearOnboardingHighlights();
+    window._onboardingStep++;
+    if(window._onboardingStep >= window.ONBOARDING_STEPS.length) {
+        window._closeOnboarding();
+        window.showToast && window.showToast('Onboarding complete! 🎉 You\'re all set!');
+    } else {
+        window._showOnboardingStep();
+    }
+};
+
+window._prevOnboardingStep = function() {
+    window._clearOnboardingHighlights();
+    if(window._onboardingStep > 0) {
+        window._onboardingStep--;
+        window._showOnboardingStep();
+    }
+};
+
+window._clearOnboardingHighlights = function() {
+    document.querySelectorAll('[style*="outline: 3px solid"]').forEach(function(el){
+        el.style.outline = '';
+        el.style.outlineOffset = '';
+    });
+};
+
+window._closeOnboarding = function() {
+    window._onboardingActive = false;
+    window._clearOnboardingHighlights();
+    var overlay = document.getElementById('onboarding-overlay');
+    if(overlay) overlay.remove();
+};
+
+// Auto-start onboarding for NEW users (first login)
+(function(){
+    var checkNew = setInterval(function(){
+        if(!window.AppState || !window.AppState.user) return;
+        clearInterval(checkNew);
+        if(!localStorage.getItem('ayur_onboarding_done') && !window._isDemoMode && !window._isEmployeeSession) {
+            setTimeout(function(){
+                if(confirm('👋 Welcome! Would you like a quick tour of the app?\n\nThis will take about 2 minutes.')) {
+                    window.startOnboarding();
+                }
+            }, 2000);
+        }
+    }, 1000);
+})();
+
+// Add "Help / Tour" button to sidebar
+setTimeout(function(){
+    var aboutBtn = document.querySelector('[onclick*="openAboutModal"]');
+    if(aboutBtn && aboutBtn.parentElement && !document.getElementById('onboarding-btn')) {
+        var btn = document.createElement('button');
+        btn.id = 'onboarding-btn';
+        btn.style.cssText = aboutBtn.style.cssText;
+        btn.className = aboutBtn.className;
+        btn.innerHTML = '<i data-lucide="play-circle" class="w-3.5 h-3.5"></i> Tour';
+        btn.onclick = function(){ window.startOnboarding(); };
+        aboutBtn.parentElement.insertBefore(btn, aboutBtn);
+        if(typeof lucide !== 'undefined') lucide.createIcons({node:btn});
+    }
+}, 2000);
+</script>
+
+<script>
+// ================================================================
+// WEBVIEW / APP CRASH FIX — Download without crashing
+// ================================================================
+// Problem: WebView apps (HopWeb, AppCreator24) crash on blob: URL downloads
+// Fix: Detect WebView + use alternative download methods
+
+window._isWebView = (function(){
+    var ua = navigator.userAgent;
+    return /wv|WebView/.test(ua) ||
+           (ua.includes('Android') && !ua.includes('Chrome/') && ua.includes('Version/')) ||
+           window.__hopweb__ !== undefined ||
+           window.ReactNativeWebView !== undefined ||
+           document.URL.startsWith('file:');
+})();
+
+// Override downloadPDFBlob for WebView compatibility
+if(window._isWebView) {
+    var _origDownloadPDFBlob = window.downloadPDFBlob;
+    window.downloadPDFBlob = async function(blob, filename) {
+        if(!blob) return false;
+
+        // Method 1: React Native WebView bridge
+        if(window.ReactNativeWebView) {
+            var reader = new FileReader();
+            reader.onload = function(e){
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'download', filename: filename, data: e.target.result
+                }));
+            };
+            reader.readAsDataURL(blob);
+            return true;
+        }
+
+        // Method 2: HopWeb bridge
+        if(window.__hopweb__) {
+            var reader2 = new FileReader();
+            reader2.onload = function(e){
+                try { window.__hopweb__.download(filename, e.target.result); } catch(ex){}
+            };
+            reader2.readAsDataURL(blob);
+            return true;
+        }
+
+        // Method 3: Open in new iframe (works in many WebViews)
+        try {
+            var reader3 = new FileReader();
+            return new Promise(function(resolve){
+                reader3.onload = function(e){
+                    var dataUrl = e.target.result;
+                    // Show PDF viewer overlay instead of download
+                    var overlay = document.createElement('div');
+                    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#1e293b;display:flex;flex-direction:column;';
+                    var header = document.createElement('div');
+                    header.style.cssText = 'padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:#0f172a;flex-shrink:0;';
+                    var title = document.createElement('span');
+                    title.style.cssText = 'color:white;font-weight:700;font-size:14px;';
+                    title.textContent = filename;
+                    var closeBtn = document.createElement('button');
+                    closeBtn.style.cssText = 'background:#059669;color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;';
+                    closeBtn.textContent = '✕ Close';
+                    closeBtn.onclick = function(){ overlay.remove(); };
+                    var iframe = document.createElement('iframe');
+                    iframe.src = dataUrl;
+                    iframe.style.cssText = 'flex:1;border:none;width:100%;background:white;';
+                    header.appendChild(title);
+                    header.appendChild(closeBtn);
+                    overlay.appendChild(header);
+                    overlay.appendChild(iframe);
+                    document.body.appendChild(overlay);
+                    resolve(true);
+                };
+                reader3.readAsDataURL(blob);
+            });
+        } catch(e) {
+            window.showToast && window.showToast('Open in browser for PDF download','info');
+            return false;
+        }
+    };
+
+    console.log('WebView mode detected — using compatible download method');
+}
+
+// Fix CSV downloads in WebView too
+if(window._isWebView) {
+    var origDownloadCSV = window.downloadCSV || (typeof downloadCSV !== 'undefined' ? downloadCSV : null);
+    if(origDownloadCSV) {
+        window.downloadCSV = function(content, filename) {
+            try {
+                var blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    var a = document.createElement('a');
+                    a.href = e.target.result;
+                    a.download = filename;
+                    a.click();
+                };
+                reader.readAsDataURL(blob);
+            } catch(e) {
+                window.showToast && window.showToast('Copy CSV from Settings > Backup','info');
+            }
+        };
+    }
+}
+
+// ── HOW TO MAKE APP: Show guide in About modal ─────────────────
+window.showAppGuide = function() {
+    window.showToast && window.showToast('Open About → How to Use tab for full guide','info');
+    window.openAboutModal && window.openAboutModal();
+    setTimeout(function(){ window.switchAboutTab && window.switchAboutTab('guide'); }, 300);
+};
+</script>
+
+<script>
+// ================================================================
+// ANIMATIONS & UI IMPROVEMENTS
+// ================================================================
+(function(){
+    // Add smooth animations CSS
+    var animStyle = document.createElement('style');
+    animStyle.textContent = [
+        // Card hover animations
+        '.card-hover{transition:transform .2s ease,box-shadow .2s ease}',
+        '.card-hover:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}',
+        // Nav item slide animation
+        '.nav-item{transition:background .15s ease,color .15s ease,transform .1s ease}',
+        // Tab fade animation
+        '@keyframes tabFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}',
+        '.tab.active{animation:tabFadeIn .25s ease-out}',
+        // Button press effect
+        '.btn:active{transform:scale(.97)}',
+        // Toast slide in
+        '@keyframes toastIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}',
+        // Skeleton loading
+        '@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}',
+        '.skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}',
+        // Modal animation
+        '.modal.open .modal-box{animation:modalIn .25s cubic-bezier(.34,1.56,.64,1)}',
+        '@keyframes modalIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}',
+        // Stat card pulse on update
+        '@keyframes statPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}',
+        // Auth page floating animation
+        '@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}',
+        '#auth-wrap .w-16{animation:float 4s ease-in-out infinite}',
+        // Mobile bottom nav active indicator
+        '.mobile-nav-item.active::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:20px;height:3px;background:#10b981;border-radius:2px}',
+        '.mobile-nav-item{position:relative}',
+        // Sidebar nav active glow
+        '.nav-item.active{box-shadow:0 0 0 1px rgba(16,185,129,.2),inset 0 0 12px rgba(16,185,129,.05)}',
+        // Invoice table row hover
+        'tbody tr:hover{background:#f8fafc!important;transition:background .1s}',
+        // Responsive improvements
+        '@media(max-width:640px){.modal-box{margin:0!important;border-radius:20px 20px 0 0!important;position:fixed!important;bottom:0!important;left:0!important;right:0!important;max-height:90vh!important;overflow-y:auto!important;}.modal{align-items:flex-end!important;}}'
+    ].join('\n');
+    document.head.appendChild(animStyle);
+
+    // Add skeleton loading to stats while data loads
+    setTimeout(function(){
+        document.querySelectorAll('.stat').forEach(function(el){
+            var nums = el.querySelectorAll('.text-xl,.text-2xl,.text-3xl');
+            nums.forEach(function(n){ if(n.textContent === '0' || n.textContent === '₹0') n.classList.add('skeleton'); });
+        });
+    }, 500);
+
+    // Remove skeleton when data loads
+    setTimeout(function(){
+        document.querySelectorAll('.skeleton').forEach(function(el){ el.classList.remove('skeleton'); });
+    }, 3000);
+
+    // Ripple effect on buttons
+    document.addEventListener('click', function(e){
+        var btn = e.target.closest('.btn,.nav-item');
+        if(!btn) return;
+        var ripple = document.createElement('span');
+        var rect = btn.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height);
+        ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,.3);width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px;animation:ripple .4s ease-out forwards;pointer-events:none;';
+        if(getComputedStyle(btn).position === 'static') btn.style.position = 'relative';
+        btn.style.overflow = 'hidden';
+        btn.appendChild(ripple);
+        setTimeout(function(){ ripple.remove(); }, 400);
+    });
+
+    var rippleStyle = document.createElement('style');
+    rippleStyle.textContent = '@keyframes ripple{from{opacity:1;transform:scale(0)}to{opacity:0;transform:scale(2)}}';
+    document.head.appendChild(rippleStyle);
+})();
 </script>
