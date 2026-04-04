@@ -409,7 +409,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f0f2f5;color:#0f172a
             <label class="lbl text-slate-300">Signature <span class="text-slate-500 font-normal normal-case">(optional)</span></label>
             <div class="flex items-center gap-3">
               <div class="w-16 h-9 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center overflow-hidden" id="signup-sig-preview"><i data-lucide="pen-tool" class="text-slate-400 w-4 h-4"></i></div>
-              <input type="file" accept="image/*" window.handleSignupUpload(event,'signature')"> class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/20 file:text-emerald-400">
+              <input type="file" accept="image/*" onchange="window.handleSignupUpload(event,'signature')" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-emerald-500/20 file:text-emerald-400">
             </div></div>
           <button type="submit" class="btn btn-primary w-full justify-center py-3 font-bold">Create Account</button>
           <p class="text-center text-slate-400 text-xs mt-1">By creating an account you agree to our <button type="button" onclick="document.getElementById('privacy-modal').classList.add('open')" class="text-emerald-400 font-semibold underline">Privacy Policy</button></p>
@@ -3571,9 +3571,14 @@ document.addEventListener('DOMContentLoaded', function() {
         window.handleLogout = async function() {
             try {
                 sessionStorage.removeItem('ayur_unlocked');
-                localStorage.removeItem('ayur_emp_session'); // clear any employee session too
+                localStorage.removeItem('ayur_emp_session');
                 clearFirestoreListeners();
                 await signOut(auth);
+                // Clear login form so email/password don't persist visually
+                var loginEmail = document.getElementById('login-email');
+                var loginPw = document.getElementById('login-password');
+                if(loginEmail) loginEmail.value = '';
+                if(loginPw) loginPw.value = '';
                 window.showToast("Signed out successfully.");
             } catch(e) { window.showToast("Error signing out", "error"); }
         }
@@ -4064,8 +4069,28 @@ document.addEventListener('DOMContentLoaded', function() {
             suggDiv.classList.remove('hidden');
         }
         window.addDraftItem = function(p) { window.AppState.draft.items.push({ id: Date.now().toString(), productId: p.id, name: p.name, rate: Number(p.rate), qty: 1, gst: Number(p.gst), hsn: p.hsn || '', batch: p.batch || '', expiry: p.expiry || '', inclusive: true }); setVal('inv-product-search', ''); const sugg = document.getElementById('product-suggestions'); if(sugg) sugg.classList.add('hidden'); window.updateInvoiceUI(); }
-        window.updateDraftField = function(field, val) { window.AppState.draft[field] = val; window.updateInvoiceUI(); }
-        window.updateDraftItem = function(id, field, val) { const item = window.AppState.draft.items.find(i => i.id === id); if(item) { item[field] = field === 'qty' || field === 'rate' ? Number(val) : val; window.updateInvoiceUI(); } }
+        window.updateDraftField = function(field, val) { 
+            window.AppState.draft[field] = val; 
+            // Don't rebuild items table — only update totals to keep keyboard open
+            window.calculateInvoiceTotals && window.calculateInvoiceTotals();
+            localStorage.setItem('ayur_draft_pro', JSON.stringify(window.AppState.draft));
+        }
+        window.updateDraftItem = function(id, field, val) { 
+            const item = window.AppState.draft.items.find(i => i.id === id); 
+            if(item) { 
+                item[field] = field === 'qty' || field === 'rate' || field === 'gst' ? Number(val) : val; 
+                // Only recalculate totals (don't rebuild whole table — keeps keyboard open)
+                if(field === 'qty' || field === 'rate' || field === 'gst') {
+                    var rowTotal = document.querySelector('tr[data-item-id="'+id+'"] .item-total');
+                    var curr = window.AppState.draft.currency || 'INR';
+                    if(rowTotal && window.formatCurrency) rowTotal.textContent = window.formatCurrency(Number(item.qty)*Number(item.rate), curr);
+                    window.calculateInvoiceTotals && window.calculateInvoiceTotals();
+                    localStorage.setItem('ayur_draft_pro', JSON.stringify(window.AppState.draft));
+                } else {
+                    window.updateInvoiceUI(); 
+                }
+            } 
+        }
         window.removeDraftItem = function(id) { window.AppState.draft.items = window.AppState.draft.items.filter(i => i.id !== id); window.updateInvoiceUI(); }
         window.setPaymentMode = function(mode) { 
             window.AppState.draft.paymentMode = mode; 
@@ -4140,6 +4165,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         window.updateInvoiceUI = function() {
+            // Save focused element before rebuild
+            var focusedId = document.activeElement ? document.activeElement.id : null;
+            var focusedAttr = document.activeElement ? document.activeElement.getAttribute('data-item-id') : null;
+            
             localStorage.setItem('ayur_draft_pro', JSON.stringify(window.AppState.draft));
             const items = window.AppState.draft.items; const curr = window.AppState.draft.currency || 'INR';
             
@@ -4153,17 +4182,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     const gstCell = item.isManual
                         ? `<input type="number" min="0" max="28" step="5" class="w-14 p-1 border border-slate-200 rounded outline-none text-xs" value="${item.gst||0}" onchange="window.updateDraftItem('${item.id}','gst',this.value)" placeholder="0">%`
                         : `${item.gst}%`;
-                    return `<tr class="border-b border-slate-100 last:border-0 ${item.isManual?'bg-emerald-50/30':'bg-white'}">
+                    return `<tr class="border-b border-slate-100 last:border-0 ${item.isManual?'bg-emerald-50/30':'bg-white'}" data-item-id="${item.id}">
                         <td class="p-3 min-w-[140px]">
                             ${nameCell}
                             ${(window.isFeatureEnabled('batch') && (item.batch || item.expiry) && !item.isManual) ? `<br><span class="text-[9px] text-slate-400">B:${item.batch||'-'} E:${item.expiry||'-'}</span>` : ''}
                             ${item.isManual ? '<span class="text-[9px] text-emerald-500 font-bold">✏ Custom</span>' : ''}
                         </td>
                         ${window.isFeatureEnabled('hsn') ? `<td class="p-3"><input type="text" class="w-16 p-1 border border-slate-200 rounded outline-none text-xs" value="${item.hsn||''}" onchange="window.updateDraftItem('${item.id}','hsn',this.value)" placeholder="HSN"></td>` : ''}
-                        <td class="p-3"><input type="number" min="1" class="w-16 p-1 border border-slate-200 rounded outline-none" value="${item.qty}" onchange="window.updateDraftItem('${item.id}','qty',this.value)"></td>
-                        <td class="p-3"><input type="number" class="w-20 p-1 border border-slate-200 rounded outline-none" value="${item.rate}" onchange="window.updateDraftItem('${item.id}','rate',this.value)"></td>
+                        <td class="p-3"><input type="number" min="1" class="w-16 p-1 border border-slate-200 rounded outline-none" value="${item.qty}" oninput="window.updateDraftItem('${item.id}','qty',this.value)"></td>
+                        <td class="p-3"><input type="number" class="w-20 p-1 border border-slate-200 rounded outline-none" value="${item.rate}" oninput="window.updateDraftItem('${item.id}','rate',this.value)"></td>
                         <td class="p-3 text-slate-600 whitespace-nowrap">${gstCell}</td>
-                        <td class="p-3 text-right font-medium text-emerald-700">${window.formatCurrency(Number(item.qty)*Number(item.rate),curr)}</td>
+                        <td class="p-3 text-right font-medium text-emerald-700 item-total">${window.formatCurrency(Number(item.qty)*Number(item.rate),curr)}</td>
                         <td class="p-3 text-center"><button onclick="window.removeDraftItem('${item.id}')" class="text-red-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
                     </tr>`;
                 }).join('');
@@ -4194,6 +4223,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setText('inv-id-display', window.AppState.draft.id);
             window.calculateInvoiceTotals();
+
+            // Restore focus to previously focused element (prevents keyboard closing)
+            if(focusedId || focusedAttr) {
+                requestAnimationFrame(function(){
+                    var el = focusedId ? document.getElementById(focusedId) : null;
+                    if(!el && focusedAttr) {
+                        el = document.querySelector('[data-item-id="'+focusedAttr+'"] input:focus, [data-item-id="'+focusedAttr+'"] input');
+                    }
+                    if(el && el.focus) {
+                        el.focus();
+                        // Restore cursor to end
+                        try { var v=el.value; el.value=''; el.value=v; } catch(e){}
+                    }
+                });
+            }
         }
 
         window.resumeDraft = function(id) { const inv = window.AppState.invoices.find(i => i.id === id); if(!inv) return; window.AppState.draft = JSON.parse(JSON.stringify(inv)); window.switchTab('invoice'); }
