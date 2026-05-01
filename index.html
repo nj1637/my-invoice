@@ -119,6 +119,7 @@ tr:last-child td{border-bottom:none}
     <div class="nav-sect">Export</div>
     <div class="nav-item" onclick="expAllCSV()"><i data-lucide="file-spreadsheet"></i> Export All CSV</div>
     <div class="nav-item" onclick="window.print()"><i data-lucide="printer"></i> Print Page</div>
+    <div class="nav-item" onclick="switchPage('invoices');setTimeout(()=>{selAll();printBulk();},300)"><i data-lucide="printer"></i> Print All Invoices</div>
   </aside>
   <main id="main">
 
@@ -148,7 +149,8 @@ tr:last-child td{border-bottom:none}
         <div><h1 style="font-size:24px">Invoices</h1><p style="color:#64748b;font-size:13px;margin-top:2px">Single or bulk PDF download</p></div>
         <div style="display:flex;gap:7px;flex-wrap:wrap">
           <button class="btn btn-g btn-s" onclick="selAll()"><i data-lucide="check-square" style="width:11px;height:11px"></i> Select All</button>
-          <button id="bulk-btn" class="btn btn-p btn-s" onclick="dlBulk()" style="display:none"><i data-lucide="download" style="width:11px;height:11px"></i> Bulk PDF (<span id="sel-n">0</span>)</button>
+          <button id="bulk-btn"  class="btn btn-p btn-s" onclick="dlBulk()"   style="display:none"><i data-lucide="download"  style="width:11px;height:11px"></i> Bulk PDF (<span id="sel-n">0</span>)</button>
+          <button id="bulk-prn" class="btn btn-g btn-s" onclick="printBulk()" style="display:none"><i data-lucide="printer"   style="width:11px;height:11px"></i> Bulk Print (<span id="sel-n2">0</span>)</button>
           <button class="btn btn-g btn-s" onclick="expFilteredCSV()"><i data-lucide="file-spreadsheet" style="width:11px;height:11px"></i> CSV</button>
         </div>
       </div>
@@ -217,37 +219,117 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <script type="module">
-import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-const cfg={apiKey:"AIzaSyCV3G-BMVf2QRpibaS5MnwQybKixC4h9og",authDomain:"dev-ayurveda.firebaseapp.com",projectId:"dev-ayurveda",storageBucket:"dev-ayurveda.firebasestorage.app",messagingSenderId:"40760282698",appId:"1:40760282698:web:20e31100eed712631ca0b3"};
-const app=initializeApp(cfg), db=getFirestore(app), AID='dev-ayurveda-pro-auth';
-const P=new URLSearchParams(location.search);
-const UID=P.get('uid'), BIZ=decodeURIComponent(P.get('biz')||'Business');
-window._D={uid:UID,biz:BIZ,invoices:[],expenses:[],clients:[],products:[],settings:{},loaded:0,rChart:null,pChart:null,fi:[],sel:new Set(),pg:1,PS:25};
-const ls=id=>document.getElementById(id);
-function setLS(t){const e=ls('ls');if(e)e.textContent=t;}
-if(!UID){setLS('No access link.');setTimeout(showLanding,800);}
-else{
-  ls('tb-biz').textContent=BIZ;
-  ['invoices','expenses','clients','products'].forEach(col=>{
-    onSnapshot(collection(db,'artifacts',AID,'users',UID,col),snap=>{
-      window._D[col]=snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>!d.isDeleted);
-      if(col==='invoices') window._D.invoices.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-      window._D.loaded++;setLS(`Loading ${col}...`);
-      if(window._D.loaded>=3) window.onReady();
-    },err=>{window._D.loaded++;if(window._D.loaded>=3)window.onReady();});
-  });
-  onSnapshot(doc(db,'artifacts',AID,'users',UID,'settings','config'),snap=>{
-    window._D.settings=snap.exists()?snap.data():{};
-    const bn=window._D.settings.businessName;
-    if(bn){window._D.biz=bn;const el=ls('tb-biz');if(el)el.textContent=bn;}
-  },()=>{});
+/* ══════════════════════════════════════════════════════════════
+   FIREBASE CONFIG + AUTH — CA Portal v2
+   Fix: Anonymous sign-in ensures Firestore rules pass.
+        onReady fires only after BOTH auth + all 4 collections loaded.
+   ══════════════════════════════════════════════════════════════ */
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, doc }
+                             from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged }
+                             from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+const FB_CFG = {
+  apiKey:"AIzaSyCV3G-BMVf2QRpibaS5MnwQybKixC4h9og",
+  authDomain:"dev-ayurveda.firebaseapp.com",
+  projectId:"dev-ayurveda",
+  storageBucket:"dev-ayurveda.firebasestorage.app",
+  messagingSenderId:"40760282698",
+  appId:"1:40760282698:web:20e31100eed712631ca0b3"
+};
+const AID  = 'dev-ayurveda-pro-auth';
+const app  = initializeApp(FB_CFG);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+const P   = new URLSearchParams(location.search);
+const UID = P.get('uid');
+const BIZ = decodeURIComponent(P.get('biz') || 'Business');
+
+window._D = {
+  uid:UID, biz:BIZ,
+  invoices:[], expenses:[], clients:[], products:[], settings:{},
+  loaded:0, total:4,
+  rChart:null, pChart:null,
+  fi:[], sel:new Set(), pg:1, PS:25,
+  authReady:false, dataReady:false
+};
+
+const ls  = id => document.getElementById(id);
+function setLS(t){ const e=ls('ls'); if(e) e.textContent=t; }
+
+function maybeReady(){
+  if(window._D.authReady && window._D.dataReady) window.onReady();
 }
-window.onReady=function(){
-  const el=ls('loading');if(el&&!el.classList.contains('out')){el.classList.add('out');setTimeout(()=>el.style.display='none',400);}
-  window.populateGSTPeriods&&window.populateGSTPeriods();
-  window.loadDash&&window.loadDash();window.filtInv&&window.filtInv();window.loadGST&&window.loadGST();
-  window.loadPnL&&window.loadPnL();window.loadExpenses&&window.loadExpenses();window.loadClients&&window.loadClients();
+
+if(!UID){
+  setLS('No access link provided.');
+  setTimeout(()=>{ if(window.showLanding) window.showLanding(); }, 800);
+} else {
+  const tbBiz = ls('tb-biz');
+  if(tbBiz) tbBiz.textContent = BIZ;
+  setLS('Authenticating...');
+
+  /* Anonymous sign-in so Firestore security rules allow read */
+  signInAnonymously(auth).catch(err => {
+    console.warn('[CA Portal] anon sign-in failed:', err.message);
+  });
+
+  onAuthStateChanged(auth, () => {
+    window._D.authReady = true;
+    setLS('Loading data...');
+    maybeReady();
+  });
+
+  /* Subscribe to all 4 collections */
+  ['invoices','expenses','clients','products'].forEach(col => {
+    onSnapshot(
+      collection(db, 'artifacts', AID, 'users', UID, col),
+      snap => {
+        window._D[col] = snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>!d.isDeleted);
+        if(col==='invoices') window._D.invoices.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        window._D.loaded++;
+        setLS('Loading data... (' + window._D.loaded + '/4)');
+        if(window._D.loaded >= window._D.total){ window._D.dataReady=true; maybeReady(); }
+        /* Re-render active page after live updates */
+        if(window._D.authReady && window._D.dataReady){
+          if(col==='invoices') window.filtInv && window.filtInv();
+          if(col==='expenses') window.loadExpenses && window.loadExpenses();
+          if(col==='clients')  window.loadClients  && window.loadClients();
+          window.loadDash && window.loadDash();
+        }
+      },
+      err => {
+        console.warn('[CA Portal] snapshot error', col, err.message);
+        window._D.loaded++;
+        if(window._D.loaded >= window._D.total){ window._D.dataReady=true; maybeReady(); }
+      }
+    );
+  });
+
+  /* Settings doc */
+  onSnapshot(
+    doc(db,'artifacts',AID,'users',UID,'settings','config'),
+    snap => {
+      window._D.settings = snap.exists() ? snap.data() : {};
+      const bn = window._D.settings.businessName;
+      if(bn){ window._D.biz=bn; const el=ls('tb-biz'); if(el) el.textContent=bn; }
+    },
+    ()=>{}
+  );
+}
+
+window.onReady = function(){
+  const el=ls('loading');
+  if(el && !el.classList.contains('out')){ el.classList.add('out'); setTimeout(()=>el.style.display='none',400); }
+  window.populateGSTPeriods && window.populateGSTPeriods();
+  window.loadDash     && window.loadDash();
+  window.filtInv      && window.filtInv();
+  window.loadGST      && window.loadGST();
+  window.loadPnL      && window.loadPnL();
+  window.loadExpenses && window.loadExpenses();
+  window.loadClients  && window.loadClients();
   lucide.createIcons();
 };
 </script>
@@ -303,36 +385,107 @@ function togSel(id,c){const d=D();if(c)d.sel.add(id);else d.sel.delete(id);updBu
 window.togSel=togSel;
 function toggleAll(el){const d=D();document.querySelectorAll('.rc').forEach(c=>{c.checked=el.checked;if(el.checked)d.sel.add(c.dataset.id);else d.sel.delete(c.dataset.id);});updBulk();}
 window.toggleAll=toggleAll;
-function updBulk(){const btn=$('bulk-btn'),cn=$('sel-n');if(!btn||!cn)return;const n=D().sel.size;cn.textContent=n;btn.style.display=n>0?'inline-flex':'none';}
+function updBulk(){const btn=$('bulk-btn'),cn=$('sel-n'),prn=$('bulk-prn'),cn2=$('sel-n2');if(!btn||!cn)return;const n=D().sel.size;cn.textContent=n;if(cn2)cn2.textContent=n;btn.style.display=n>0?'inline-flex':'none';if(prn)prn.style.display=n>0?'inline-flex':'none';}
 function selAll(){const d=D();d.fi.forEach(i=>d.sel.add(i.id));$('chk-all').checked=true;document.querySelectorAll('.rc').forEach(c=>c.checked=true);updBulk();toast(`${d.sel.size} invoices selected`);}
 window.selAll=selAll;
 
-// ── PDF: single ───────────────────────────────────────────
+// ── PDF: single (height-aware scale + canvas fix) ────────────────────────
 async function dlSingle(id){
   const inv=D().invoices.find(i=>i.id===id);if(!inv)return;
-  toast('Generating PDF...');
+  toast('Generating PDF... ⏳');
   const div=document.createElement('div');
-  div.style.cssText='position:fixed;top:0;left:0;width:794px;background:#fff;z-index:9990;opacity:0.001;pointer-events:none;font-size:11px;padding:28px 32px;box-sizing:border-box;';
+  div.style.cssText='position:fixed;top:0;left:0;width:794px;max-width:794px;background:#fff;z-index:9990;opacity:0.001;pointer-events:none;font-size:11px;box-sizing:border-box;overflow:visible;';
   div.innerHTML=buildHTML(inv);document.body.appendChild(div);
-  await new Promise(r=>setTimeout(r,300));
-  try{await html2pdf().set({margin:0,filename:`${inv.id}.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,windowWidth:794,width:794,backgroundColor:'#fff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(div).save();toast(`${inv.id}.pdf ✅`);}
-  catch(e){toast('PDF error','err');}finally{document.body.removeChild(div);}
+  await new Promise(r=>setTimeout(r,350));
+  const h=Math.max(div.scrollHeight,div.offsetHeight,1123);
+  const scale=h>5000?1.5:2;
+  try{
+    await html2pdf().set({
+      margin:0,filename:`${inv.id}.pdf`,
+      image:{type:'jpeg',quality:.95},
+      html2canvas:{scale,useCORS:true,type:'canvas',allowTaint:true,logging:false,
+        backgroundColor:'#fff',windowWidth:794,width:794,windowHeight:h,height:h,scrollX:0,scrollY:0},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},
+      pagebreak:{mode:['css','legacy'],avoid:['tr','td','img']}
+    }).from(div).save();
+    toast(`${inv.id}.pdf ✅`);
+  }
+  catch(e){toast('PDF error','err');console.error(e);}
+  finally{try{document.body.removeChild(div);}catch(e){}}
 }
 window.dlSingle=dlSingle;
 
-// ── PDF: bulk ─────────────────────────────────────────────
+// ── PDF: bulk (Virtual DOM — one invoice at a time to avoid OOM) ─────────
 async function dlBulk(){
   const d=D(),ids=[...d.sel],invs=ids.map(id=>d.invoices.find(i=>i.id===id)).filter(Boolean);
   if(!invs.length)return toast('Select invoices first','w');
-  toast(`Building bulk PDF for ${invs.length} invoice(s)...`);
-  const wrap=document.createElement('div');
-  wrap.style.cssText='position:fixed;top:0;left:0;width:794px;background:#fff;z-index:9990;opacity:0.001;pointer-events:none;';
-  invs.forEach(inv=>{const dv=document.createElement('div');dv.style.cssText='page-break-after:always;break-after:page;width:794px;padding:28px 32px;box-sizing:border-box;background:#fff;font-size:11px';dv.innerHTML=buildHTML(inv);wrap.appendChild(dv);});
-  document.body.appendChild(wrap);await new Promise(r=>setTimeout(r,700));
-  try{const biz=(d.settings?.businessName||d.biz||'Biz').replace(/\s+/g,'_');await html2pdf().set({margin:0,filename:`${biz}_Bulk_${Date.now()}.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,windowWidth:794,width:794,backgroundColor:'#fff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(wrap).save();toast(`Bulk PDF: ${invs.length} invoice(s) ✅`);}
-  catch(e){toast('Bulk PDF error','err');}finally{document.body.removeChild(wrap);}
+  const biz=(d.settings?.businessName||d.biz||'Biz').replace(/\s+/g,'_');
+  const filename=`${biz}_Bulk_${new Date().toISOString().slice(0,10)}.pdf`;
+  const total=invs.length;
+  toast(`Building ${total} invoice PDF(s)... ⏳`);
+
+  /* Shared html2pdf config builder */
+  function mkCfg(h){ return {margin:0,filename,image:{type:'jpeg',quality:.95},html2canvas:{scale:h>5000?1.5:2,useCORS:true,type:'canvas',allowTaint:true,logging:false,backgroundColor:'#fff',windowWidth:794,width:794,windowHeight:h,height:h,scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},pagebreak:{mode:['css','legacy'],avoid:['tr','td','img']}}; }
+
+  let pdfWorker=null;
+
+  for(let i=0;i<total;i++){
+    toast(`Processing ${i+1}/${total}...`);
+    const inv=invs[i];
+
+    /* Mount one invoice off-screen */
+    const container=document.createElement('div');
+    container.style.cssText='position:fixed;top:0;left:0;width:794px;max-width:794px;background:#fff;z-index:9990;opacity:0.001;pointer-events:none;box-sizing:border-box;overflow:visible;font-size:11px;';
+    container.innerHTML=buildHTML(inv);
+    document.body.appendChild(container);
+    await new Promise(r=>setTimeout(r,350));
+
+    const h=Math.max(container.scrollHeight,container.offsetHeight,1123);
+    const cfg=mkCfg(h);
+
+    try{
+      if(i===0){
+        pdfWorker=html2pdf().set(cfg).from(container);
+        await pdfWorker.toPdf();
+      } else {
+        const worker=html2pdf().set(cfg).from(container);
+        const canvas=await worker.toCanvas();
+        const imgData=canvas.toDataURL('image/jpeg',0.95);
+        const jsdoc=pdfWorker.get('pdf');
+        jsdoc.addPage();
+        const pw=jsdoc.internal.pageSize.getWidth(),ph=jsdoc.internal.pageSize.getHeight();
+        jsdoc.addImage(imgData,'JPEG',0,0,pw,ph);
+      }
+    } catch(e){ console.warn('[BulkPDF] invoice',inv.id,'failed:',e.message); }
+
+    /* Clear from DOM immediately to free memory */
+    try{ document.body.removeChild(container); }catch(e){}
+    await new Promise(r=>setTimeout(r,60));
+  }
+
+  if(pdfWorker){
+    try{ await pdfWorker.save(); toast(`Bulk PDF: ${total} invoice(s) downloaded ✅`); }
+    catch(e){ toast('PDF save error','err'); }
+  }
 }
 window.dlBulk=dlBulk;
+
+// ── BULK PRINT (opens all selected invoices in a printable window) ────────
+async function printBulk(){
+  const d=D(),ids=[...d.sel],invs=ids.map(id=>d.invoices.find(i=>i.id===id)).filter(Boolean);
+  if(!invs.length)return toast('Select invoices first','w');
+  toast(`Preparing ${invs.length} invoice(s) for print...`);
+  const html=invs.map((inv,i)=>`<div style="width:794px;margin:0 auto;padding:28px 32px;box-sizing:border-box;background:#fff;font-size:11px;${i<invs.length-1?'page-break-after:always;':''}">
+    ${buildHTML(inv).replace(/<div style="font-family[^>]+>/,'<div>').replace(/min-height:297mm;/,'').replace(/width:794px;/,'width:100%;')}
+  </div>`).join('');
+  const win=window.open('','_blank','width=860,height=700');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:#fff}@media print{@page{size:A4;margin:0}body{margin:0}}</style>
+  </head><body>${html}<script>setTimeout(()=>{window.print();},800);<\/script></body></html>`);
+  win.document.close();
+}
+window.printBulk=printBulk;
 
 function expFilteredCSV(){const invs=D().fi;if(!invs.length)return toast('No invoices','w');const h='Invoice ID,Type,Date,Client,Subtotal,GST,Total,Payment,Mode\n',r=invs.map(i=>`${i.id},"${i.docType||'Tax Invoice'}",${i.date},"${i.client?.name||''}",${(i.subtotal||0).toFixed(2)},${(i.totalTax||0).toFixed(2)},${(i.grandTotal||0).toFixed(2)},${i.paymentStatus||'unpaid'},${i.paymentMode||''}`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h+r],{type:'text/csv'}));a.download=`Invoices_${Date.now()}.csv`;a.click();toast('CSV exported ✅');}
 window.expFilteredCSV=expFilteredCSV;
